@@ -34,18 +34,20 @@ CircBufState BufferAdd(CircBuf* CB, CircBufData_t item){
 	}	
 }
 
-CircBufState BufferRemove(Circbuf* CB){
+CircBufState BufferRemove(Circbuf* CB, CircBufData_t* item){
 
-	if(!CB || !(CB->buffer)) return PTR_ERROR; 
+	if(!CB || !(CB->buffer) ) return PTR_ERROR; 
 	if(CB->count == 0){
 		return ITEM_REMOVE_FAILURE;	
 	}
 	if(CB->count == 1){ // return to empty state
+		if(item) *item = *(CB->tail);
 		CB->tail = CB->buffer;
 		CB->head = CB->buffer;
 		CB->count = 0;
 		return SUCCESS;
 	}	
+	if(item) *item = *(CB->tail);
 	CB->tail = (CB->tail > CB->buffer ? CB->tail - 1 : CB->tail + CB->length);	
 	(CB->count)--;
 	return SUCCESS;
@@ -68,8 +70,9 @@ CircBufState BufferEmpty(CircBuf* CB){
 CircBufState BufferPeek(CircBuf* CB, CircBufData_t* item_n, uint32_t n){
 // returns nth oldest item
 	if(!CB || !item_n || !(CB->buffer)) return PTR_ERROR;
-	if(n > CB->count || n < 0) return INVALID_PEEK;
-	*item_n = (CB->tail + n > CB->buffer + CB->length ? CB->tail + n - CB->length : CB->tail + n);
+	if(n > CB->count || n < 1) return INVALID_PEEK;
+	*item_n = (CB->tail + (n - 1) > CB->buffer + CB->length ? 
+		CB->tail + (n -1) - CB->length : CB->tail + (n - 1));
 	return SUCCESS;
 }
 
