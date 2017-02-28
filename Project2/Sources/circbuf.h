@@ -59,7 +59,7 @@ CircBufState BufferInit(CircBuf* CB, uint32_t size);
 /******************************************************
 * CircBufState BufferAdd(CircBuf* CB, circbuf_data_t item);
 *	Description: This function is used to add parameter item
-*		into an initiaiized buffer pointed at by CB. This
+*		into an initialized buffer pointed at by CB. This
 *		function will by default overwrite the oldest entry
 *		if the CircBuf is full,
 *	Parameters:
@@ -82,7 +82,7 @@ CircBufState BufferAdd(CircBuf* CB, CircBufData_t item);
 /******************************************************
 * CircBufState BufferRemove(Circbuf* CB);
 *	Description: This function is used to remove the oldest item
-*		previusly inside of a CircBuf pointed at by CB. If successful
+*		previously inside of a CircBuf pointed at by CB. If successful
 *		the item parameter will point at the entry that has just
 *		been removed.
 *	Parameters:
@@ -100,7 +100,7 @@ CircBufState BufferAdd(CircBuf* CB, CircBufData_t item);
 *		- ITEM_REMOVE_FAILURE: CB points at an empty CircBuf. Nothing can
 *		be removed and the value of *item is the same as before.
 *		- PTR_ERROR: CB is an invalid pointer or points to an 
-*		unitialized CircBuf. The function
+*		uninitialized CircBuf. The function
 *		will return without having done any work.
 ******************************************************/
 CircBufState BufferRemove(Circbuf* CB, CircBufData_t* item);
@@ -118,7 +118,7 @@ CircBufState BufferRemove(Circbuf* CB, CircBufData_t* item);
 *		- BUFFER_NOT_FULL: CB is a valid pointer to an 
 *		initialized an non-full CircBuf
 *		- PTR_ERROR: CB is an invalid pointer, or points
-*		to an unitialized CircBuf
+*		to an uninitialized CircBuf
 ******************************************************/
 CircBufState BufferFull(Circbuf* CB);
 
@@ -128,14 +128,14 @@ CircBufState BufferFull(Circbuf* CB);
 *		CircBuf is empty.
 *	Parameters: 
 *		- CircBuf* CB: This parameter should be a valid pointer
-*		to an initalized CircBuf
+*		to an initialized CircBuf
 *	Possible Return Values:
 *		- BUFFER_EMPTY: CB is a valid pointer to an initialized 
 *		and empty CircBuf
 *		- BUFFER_NOT_EMPTY: CB is a valid pointer to an
 *		initialized and non-empty CircBuf
 		_ PTR_ERROR: CB is an invalid pointer or points at an
-*		unitialized CircBuf.
+*		uninitialized CircBuf.
 ******************************************************/
 CircBufState BufferEmpty(CircBuf* CB);
 
@@ -146,8 +146,8 @@ CircBufState BufferEmpty(CircBuf* CB);
 *	Parameters: 
 *		- CircBuf* CB: This parameter should be a valid pointer
 *		to an initialized CircBuf containing at least n items.
-*		- CircBufData_t* item_n: This paramter should be a valid
-*		pointer that upon succesful completion of the function call
+*		- CircBufData_t* item_n: This parameter should be a valid
+*		pointer that upon successful completion of the function call
 *		will point at the nth item in the CircBuf.
 *		- uint32_t n: This parameter indicates which item should be peeked at.
 *		n is one-based, so n = 1 returns the first value in the buffer.
@@ -157,7 +157,7 @@ CircBufState BufferEmpty(CircBuf* CB);
 *		CIrcBuf.
 *		- INVALID_PEEK: CB is a valid pointer to an initialized CircBuf which contains
 *		less than n items or n < 1.
-*		- PTR_ERROR: CB is invalid or points at an unitialized CircBuf or item_n 
+*		- PTR_ERROR: CB is invalid or points at an uninitialized CircBuf or item_n
 *		is an invalid pointer.
 ******************************************************/
 CircBufState BufferPeek(CircBuf* CB, CircBufData_t* item_n, uint32_t n);
@@ -167,14 +167,14 @@ CircBufState BufferPeek(CircBuf* CB, CircBufData_t* item_n, uint32_t n);
 *	Description: This function destroys a CircBuf and returns 
 *		its memory back the heap. To use this buffer again a call
 *		to BufferInitialize() must be made.
-*	Paramters:
+*	Parameters:
 *		- CircBuf* CB: This should be a pointer to an initialized
 *		CircBuf.
 *	Possible Return Values:
 *		- SUCCESS: The previously valid CircBuf pointed at by CB
 *		has been destroyed, and its dynamic memory has been returned 
 *		for later use,
-*		- PTR_ERROR: CB is an invalid pointer or points at an unitiailized
+*		- PTR_ERROR: CB is an invalid pointer or points at an uninitialized
 *		CircBuf. No work is done in this case.
 ******************************************************/
 CircBufState BufferDestroy(CircBuf* CB);
