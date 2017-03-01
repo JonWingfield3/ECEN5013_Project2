@@ -1,5 +1,5 @@
-#ifndef __CIRCBUF_H__
-#define __CIRCBUF_H__
+#ifndef __CircBuf_H__
+#define __CircBuf_H__
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -15,7 +15,7 @@ typedef struct CircBuf_S{
 }CircBuf;
 
 typedef enum CircBufState_E{
-	SUCCESS,
+	SUCCESS_BUF,
 	INIT_FAILURE,
 	HEAP_FULL,
 	INVALID_PEEK,
@@ -26,12 +26,14 @@ typedef enum CircBufState_E{
 	BUFFER_EMPTY,
 	BUFF_NOT_EMPTY,
 	ITEM_REMOVE_FAILURE,
+	OVERWRITE,
+	PTR_ERROR_BUF
 }CircBufState;
 
 /******************************************************
 * CircBufState BufferInit(CircBuf* CB, uint32_t size)
 *	Description: This function is used to initialize
-*		a Circbuf. The buffer member is set to point
+*		a CircBuf. The buffer member is set to point
 *		at an  array of type CircBufData_t that can hold size
 *		elements. If the heap is full, function returns a 
 *		HEAP_FULL error. The end result of a successful
@@ -57,7 +59,7 @@ typedef enum CircBufState_E{
 CircBufState BufferInit(CircBuf* CB, uint32_t size);
 
 /******************************************************
-* CircBufState BufferAdd(CircBuf* CB, circbuf_data_t item);
+* CircBufState BufferAdd(CircBuf* CB, CircBuf_data_t item);
 *	Description: This function is used to add parameter item
 *		into an initialized buffer pointed at by CB. This
 *		function will by default overwrite the oldest entry
@@ -80,7 +82,7 @@ CircBufState BufferInit(CircBuf* CB, uint32_t size);
 CircBufState BufferAdd(CircBuf* CB, CircBufData_t item);
 
 /******************************************************
-* CircBufState BufferRemove(Circbuf* CB);
+* CircBufState BufferRemove(CircBuf* CB);
 *	Description: This function is used to remove the oldest item
 *		previously inside of a CircBuf pointed at by CB. If successful
 *		the item parameter will point at the entry that has just
@@ -103,15 +105,15 @@ CircBufState BufferAdd(CircBuf* CB, CircBufData_t item);
 *		uninitialized CircBuf. The function
 *		will return without having done any work.
 ******************************************************/
-CircBufState BufferRemove(Circbuf* CB, CircBufData_t* item);
+CircBufState BufferRemove(CircBuf* CB, CircBufData_t* item);
 
 /******************************************************
-* CircBufState BufferFull(Circbuf* CB);
+* CircBufState BufferFull(CircBuf* CB);
 *	Description: This function can be used to check if 
 *		 a CircBuf is full. 
 *	Parameters:
 *		CircBuf* CB: This parameter should be a valid pointer
-*		to an initialized CIrcBuf
+*		to an initialized CircBuf
 *	Possible Return Values:
 *		- BUFFER_FULL: CB is a valid pointer to an initialized
 *		and full CircBuf.
@@ -120,7 +122,7 @@ CircBufState BufferRemove(Circbuf* CB, CircBufData_t* item);
 *		- PTR_ERROR: CB is an invalid pointer, or points
 *		to an uninitialized CircBuf
 ******************************************************/
-CircBufState BufferFull(Circbuf* CB);
+CircBufState BufferFull(CircBuf* CB);
 
 /******************************************************
 * CircBufState BufferEmpty(CircBuf* CB);
@@ -154,7 +156,7 @@ CircBufState BufferEmpty(CircBuf* CB);
 *	Possible Return Values:
 *		- SUCCESS: CB is a valid pointer to an initialized CircBuf with at least
 *		n items inside of it. item_n will point at a copy of the nth item in the
-*		CIrcBuf.
+*		CircBuf.
 *		- INVALID_PEEK: CB is a valid pointer to an initialized CircBuf which contains
 *		less than n items or n < 1.
 *		- PTR_ERROR: CB is invalid or points at an uninitialized CircBuf or item_n
@@ -179,4 +181,4 @@ CircBufState BufferPeek(CircBuf* CB, CircBufData_t* item_n, uint32_t n);
 ******************************************************/
 CircBufState BufferDestroy(CircBuf* CB);
 
-#endif /* __CIRCBUF_H__ */
+#endif /* __CircBuf_H__ */

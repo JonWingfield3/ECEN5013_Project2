@@ -19,7 +19,7 @@ UART_RETURN uart_configure(STD_BAUD br, uint8_t channel) {
 	switch((uint32_t)br)
 	{
 		case 38400:
-			UART0_BDH |= 0x02
+			UART0_BDH |= 0x02;
 			UART0_BDL  = 0x71;
 		break;
 		case 57600:
@@ -33,8 +33,8 @@ UART_RETURN uart_configure(STD_BAUD br, uint8_t channel) {
 		break;
 	}
 
-	SIM_SOPT2 |= SIM_SOPT2_UART0SRC(0); // see page 196 of TRM
-	// above line selects clock source for UART, 3 choices, not sure which
+	SIM_SOPT2 |= SIM_SOPT2_UART0SRC(1); // The internet said to use this one
+	SIM_SOPT2 |= SIM_SOPT2_PLLFLLSEL(0); // scale the clock correctly
 
 
 	// STILL NEED TO DEAL WITH FRACTIONAL PARTS.

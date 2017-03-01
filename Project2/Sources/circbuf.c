@@ -2,7 +2,7 @@
 
 CircBufState BufferInit(CircBuf* CB, uint32_t size){
 	
-	if(!CB) return PTR_ERROR;
+	if(!CB) return PTR_ERROR_BUF;
 	if(size == 0) return INIT_FAILURE;
 	CB->buffer = (CircBufData_t*)malloc(sizeof(CircBufData_t) * size);
 	if(!(CB->buffer)) return HEAP_FULL;
@@ -10,16 +10,16 @@ CircBufState BufferInit(CircBuf* CB, uint32_t size){
 	CB->tail = CB->buffer;
 	CB->length = size;
 	CB->count = 0;
-	return SUCCESS;	
+	return SUCCESS_BUF;
 }
 
 CircBufState BufferAdd(CircBuf* CB, CircBufData_t item){
 	
-	if(!CB || !(CB->buffer)) return PTR_ERROR;
+	if(!CB || !(CB->buffer)) return PTR_ERROR_BUF;
 	if(CB->count == 0){ // handle empty buffer case
 		*(CB->head) = item;
 		(CB->count)++;
-		return SUCCESS;
+		return SUCCESS_BUF;
 	}
 	if(CB->count <= CB->length){
 		CB->head = (CB->head < (CB->buffer + CB->length) ? CB->head + 1 : CB->buffer);
@@ -29,14 +29,14 @@ CircBufState BufferAdd(CircBuf* CB, CircBufData_t item){
 		}
 		else{  // handle not full not empty buffer
 			(CB->count)++;
-		 	return SUCCESS;
+		 	return SUCCESS_BUF;
 		}	
 	}	
 }
 
-CircBufState BufferRemove(Circbuf* CB, CircBufData_t* item){
+CircBufState BufferRemove(CircBuf* CB, CircBufData_t* item){
 
-	if(!CB || !(CB->buffer) ) return PTR_ERROR; 
+	if(!CB || !(CB->buffer) ) return PTR_ERROR_BUF;
 	if(CB->count == 0){
 		return ITEM_REMOVE_FAILURE;	
 	}
@@ -45,45 +45,45 @@ CircBufState BufferRemove(Circbuf* CB, CircBufData_t* item){
 		CB->tail = CB->buffer;
 		CB->head = CB->buffer;
 		CB->count = 0;
-		return SUCCESS;
+		return SUCCESS_BUF;
 	}	
 	if(item) *item = *(CB->tail);
 	CB->tail = (CB->tail > CB->buffer ? CB->tail - 1 : CB->tail + CB->length);	
 	(CB->count)--;
-	return SUCCESS;
+	return SUCCESS_BUF;
 }
 
-CircBufState BufferFull(Circbuf* CB){
+CircBufState BufferFull(CircBuf* CB){
 
-	if(!CB) return PTR_ERROR;
+	if(!CB) return PTR_ERROR_BUF;
 	if(CB->count == CB->length) return BUFFER_FULL;	
 	else return BUFFER_NOT_FULL;
 }
 
 CircBufState BufferEmpty(CircBuf* CB){
 
-	if(!CB) return PTR_ERROR;
+	if(!CB) return PTR_ERROR_BUF;
 	if(CB->count == 0) return BUFFER_EMPTY;
-	else return BUFFER_NOT_EMPTY;
+	else return BUFF_NOT_EMPTY;
 }
 
 CircBufState BufferPeek(CircBuf* CB, CircBufData_t* item_n, uint32_t n){
 // returns nth oldest item
-	if(!CB || !item_n || !(CB->buffer)) return PTR_ERROR;
+	if(!CB || !item_n || !(CB->buffer)) return PTR_ERROR_BUF;
 	if(n > CB->count || n < 1) return INVALID_PEEK;
-	*item_n = (CB->tail + (n - 1) > CB->buffer + CB->length ? 
-		CB->tail + (n -1) - CB->length : CB->tail + (n - 1));
-	return SUCCESS;
+	*item_n = (CB->tail + (n - 1) > CB->buffer + CB->length ? *(CB->tail + (n -1) - CB->length) : *(CB->tail + (n - 1)));
+	 // Something is wrong here ^
+	return SUCCESS_BUF;
 }
 
 CircBufState BufferDestroy(CircBuf* CB){
 
-	if(!CB || !(CB->buffer)) return PTR_ERROR;
+	if(!CB || !(CB->buffer)) return PTR_ERROR_BUF;
 	free(CB->buffer);
 	CB->length = 0;
 	CB->count = 0;
 	CB->head = NULL;
 	CB->tail = NULL;
 	CB->buffer = NULL;
-	return SUCCESS;
+	return SUCCESS_BUF;
 }

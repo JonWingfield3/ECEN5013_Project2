@@ -8,12 +8,14 @@
 #include "uart.h"
 #include "data.h"
 #include "memory.h"
+#include "circbuf.h"
+#include "defines.h"
 
 #ifndef SOURCES_LOG_H_
 #define SOURCES_LOG_H_
 
 typedef enum log_error_t {
-	SUCCESS,
+	SUCCESS_LOG,
 	NOT_SURE_WHICH_OTHER_CONDITIONS_TO_INCLUDE_YET
 } log_error;
 

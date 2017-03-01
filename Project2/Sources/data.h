@@ -7,9 +7,7 @@
 
 // local includes
 #include "memory.h"
-
-#define PTR_ERROR  ((int8_t)-1)
-#define SUCCESS    ((int8_t)0)
+#include "defines.h"
 
 /****************************************************************
 *	File: data.h
@@ -86,7 +84,7 @@ int32_t my_atoi(int8_t* str);
 *
 *	Description: Converts big-endian chunk of memory pointed at by data into little
 *	endian format. Assumes word length of 32-bits. The size of the memory region is
-*	given by the parameter length. Returns 0 in case of success and non-0 value for 
+*	given by the parameter length. Returns 0 in case of SUCCESS_DATA and non-0 value for
 *	failure.  
 *		
 *
@@ -94,8 +92,8 @@ int32_t my_atoi(int8_t* str);
 *		- uint32_t* data: Pointer to base of big-endian memory region. 
 *		- uint32_t length: Number of bytes to convert endianness of.
 *
-*	Return value: int8_t. Return value used to indicate success/failure of function.
-*		0 used to indicate success, non-0 value used to indicate failure.
+*	Return value: int8_t. Return value used to indicate SUCCESS_DATA/failure of function.
+*		0 used to indicate SUCCESS_DATA, non-0 value used to indicate failure.
 * 
 *****************************************************************/
 int8_t big_to_little32(uint32_t* data, uint32_t length);
@@ -107,15 +105,15 @@ int8_t big_to_little32(uint32_t* data, uint32_t length);
 *	
 *	Description: Converts little-endian chunk of memory pointed at by data into big
 *	endian format. Assumes word length of 32-bits. The size of the memory region is 
-*	given by the parameter length. Returns 0 in case of success and non-o value for 
+*	given by the parameter length. Returns 0 in case of SUCCESS_DATA and non-o value for
 *	failure.
 *
 *	Parameters:
 *		- uint32_t* data: Pointer to base of little-endian memory region.
 *		- uint32_t length: Number of bytes to convert endianness of.. 
 *
-*	Return value: int8_t. Return value used to indicate success/failure of function.
-*		0 used to indicate success, non-0 value used to indicate failure.
+*	Return value: int8_t. Return value used to indicate SUCCESS_DATA/failure of function.
+*		0 used to indicate SUCCESS_DATA, non-0 value used to indicate failure.
 *
 *****************************************************************/
 int8_t little_to_big32(uint32_t* data, uint32_t length);

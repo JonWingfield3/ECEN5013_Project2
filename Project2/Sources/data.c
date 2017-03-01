@@ -1,4 +1,4 @@
-#include "../includes/data.h"
+#include "data.h"
 
 #define IS_NUM(X) (0x30 <= X && X <= 0x39)
 #define NUM_2_ASCII(X) (X + 0x30)

@@ -3,9 +3,7 @@
 
 // standard includes
 #include <stdint.h>
-
-#define PTR_ERROR  ((int8_t)-1)
-#define SUCCESS    ((int8_t)0)
+#include "defines.h"
 
 /***********************************************************************************
 * 	File: memory.h

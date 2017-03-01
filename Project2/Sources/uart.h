@@ -5,6 +5,7 @@
  *      Author: jacob
  */
 #include "MKL25Z4.h"
+#include "defines.h"
 
 #ifndef SOURCES_UART_H_
 #define SOURCES_UART_H_
