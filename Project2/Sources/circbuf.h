@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef uint8_t CircBufData_t
+typedef uint8_t CircBufData_t;
 
 typedef struct CircBuf_S{
 	CircBufData_t* buffer;
