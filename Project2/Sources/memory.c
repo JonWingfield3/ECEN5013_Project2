@@ -44,12 +44,12 @@ int8_t my_memzero(uint8_t* src, uint32_t length)
 int8_t my_reverse(uint8_t* src, uint32_t length)
 {
 	if( !src ) return PTR_ERROR;
-    uint32_t i;
+  uint32_t i;
 	uint8_t temp;
 
 	for(i = 0; i < length >> 1; ++i)
 	{
-		temp = src[i];
+		temp = *(src + i);
 		*(src + i)= *(src + length - 1 - i);
 		*(src + length -1 - i) = temp;
 	}
