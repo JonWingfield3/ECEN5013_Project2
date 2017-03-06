@@ -6,7 +6,7 @@
 
 int8_t* my_itoa(int8_t* str, int32_t data, int32_t base)
 {
-	const int8_t* digits = "0123456789abcdefghijklmnopqrstuvwxyz";
+	const int8_t* digits = (int8_t *) ("0123456789abcdefghijklmnopqrstuvwxyz");
 	uint8_t i = 0;
 	uint32_t u_data;
 
@@ -41,9 +41,9 @@ int8_t* my_itoa(int8_t* str, int32_t data, int32_t base)
 	}while(u_data);
 
 	if(str[0] == '-')
-		my_reverse(str + 1, i - 1);
+		my_reverse((uint8_t *)(str + 1), i - 1);
 	else
-		my_reverse(str, i);
+		my_reverse((uint8_t *)str, i);
 
 	*(str + i) = '\0';
 	return str;

@@ -1,4 +1,4 @@
-CC = gcc
+CC = cc
 CFLAGS = -std=c99 -Wall -Werror -g -O0
 
 SUBDIRS = 3rd-party
@@ -27,7 +27,7 @@ include sources.mk
 %.o : %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(LIB) : $(SRCS)
+$(LIB) : $(OBJ_NAMES)
 	$(AR) $(ARFLAGS) $@ $^
 
 all : $(LIB) $(EXE)

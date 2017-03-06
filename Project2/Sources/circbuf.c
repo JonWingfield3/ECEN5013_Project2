@@ -1,7 +1,7 @@
 #include "circbuf.h"
 
 CircBufState BufferInit(CircBuf* CB, uint32_t size){
-	
+
 	if(!CB) return PTR_ERROR_BUF;
 	if(size == 0) return INIT_FAILURE;
 	CB->buffer = (CircBufData_t*)malloc(sizeof(CircBufData_t) * size);
@@ -14,31 +14,32 @@ CircBufState BufferInit(CircBuf* CB, uint32_t size){
 }
 
 CircBufState BufferAdd(CircBuf* CB, CircBufData_t item){
-	
+
 	if(!CB || !(CB->buffer)) return PTR_ERROR_BUF;
-	if(CB->count == 0){ // handle empty buffer case
+	else if(CB->count == 0){ // handle empty buffer case
 		*(CB->head) = item;
 		(CB->count)++;
 		return SUCCESS_BUF;
 	}
-	if(CB->count <= CB->length){
+	else if(CB->count <= CB->length){
 		CB->head = (CB->head < (CB->buffer + CB->length) ? CB->head + 1 : CB->buffer);
 		*(CB->head) = item;
-		if(CB->count == CB->length){  // handle full buffer (overwrite)
+	}
+	if(CB->count == CB->length){  // handle full buffer (overwrite)
 			return OVERWRITE;
 		}
-		else{  // handle not full not empty buffer
-			(CB->count)++;
-		 	return SUCCESS_BUF;
-		}	
-	}	
+	else{  // handle not full not empty buffer
+		(CB->count)++;
+	 	return SUCCESS_BUF;
+	}
 }
+
 
 CircBufState BufferRemove(CircBuf* CB, CircBufData_t* item){
 
 	if(!CB || !(CB->buffer) ) return PTR_ERROR_BUF;
 	if(CB->count == 0){
-		return ITEM_REMOVE_FAILURE;	
+		return ITEM_REMOVE_FAILURE;
 	}
 	if(CB->count == 1){ // return to empty state
 		if(item) *item = *(CB->tail);
@@ -46,9 +47,9 @@ CircBufState BufferRemove(CircBuf* CB, CircBufData_t* item){
 		CB->head = CB->buffer;
 		CB->count = 0;
 		return SUCCESS_BUF;
-	}	
+	}
 	if(item) *item = *(CB->tail);
-	CB->tail = (CB->tail > CB->buffer ? CB->tail - 1 : CB->tail + CB->length);	
+	CB->tail = (CB->tail > CB->buffer ? CB->tail - 1 : CB->tail + CB->length);
 	(CB->count)--;
 	return SUCCESS_BUF;
 }
@@ -56,7 +57,7 @@ CircBufState BufferRemove(CircBuf* CB, CircBufData_t* item){
 CircBufState BufferFull(CircBuf* CB){
 
 	if(!CB) return PTR_ERROR_BUF;
-	if(CB->count == CB->length) return BUFFER_FULL;	
+	if(CB->count == CB->length) return BUFFER_FULL;
 	else return BUFFER_NOT_FULL;
 }
 
