@@ -1,0 +1,250 @@
+!<arch>
+data.c/         0           0     0     644     1847      `
+#include "data.h"
+
+#define IS_NUM(X) (0x30 <= X && X <= 0x39)
+#define NUM_2_ASCII(X) (X + 0x30)
+#define ASCII_2_NUM(X) (X - 0x30)
+
+int8_t* my_itoa(int8_t* str, int32_t data, int32_t base)
+{
+	const int8_t* digits = "0123456789abcdefghijklmnopqrstuvwxyz";
+	uint8_t i = 0;
+	uint32_t u_data;
+
+	if(!str || base > 36 || base < 2) return NULL;
+
+	if(data < 0 && base == 10)
+	{
+		*(str + i++) = '-';
+		u_data = ((uint32_t)-data);
+		if(data == 0)
+		{// overflow. not very elegant solution but faster than do-while loop
+			*(str + i++) = '2';
+			*(str + i++) = '1';
+			*(str + i++) = '4';
+			*(str + i++) = '7';
+			*(str + i++) = '4';
+			*(str + i++) = '8';
+			*(str + i++) = '3';
+			*(str + i++) = '6';
+			*(str + i++) = '4';
+			*(str + i++) = '8';
+			*(str + i++) = '\0';
+			return str;
+		}
+	}
+	else u_data = (uint32_t)data;
+
+	do
+	{
+		*(str + i++) = digits[u_data % base];
+		u_data /= base;
+	}while(u_data);
+
+	if(str[0] == '-')
+		my_reverse(str + 1, i - 1);
+	else
+		my_reverse(str, i);
+
+	*(str + i) = '\0';
+	return str;
+}
+
+int32_t my_atoi(int8_t* str)
+{
+	uint32_t i;
+	int8_t sign = 1;
+	int32_t value = 0;
+	if(!str) return -1;
+	for(i = 0; *(str + i) != '\0'; ++i)
+	{
+		if(IS_NUM(*(str + i)))
+		{
+			value = 10*value + ASCII_2_NUM(*(str + i));
+		}
+		else if(!value && *(str + i) == '-') sign = -1;
+	}
+	return sign*value;
+}
+
+int8_t big_to_little32(uint32_t* data, uint32_t length)
+{
+	uint32_t i;
+	if(!data) return PTR_ERROR;
+
+	for(i = 0; i < length; ++i)
+		my_reverse((((uint8_t*)data) + i), 4);
+
+	return SUCCESS;
+}
+
+int8_t little_to_big32(uint32_t* data, uint32_t length)
+{
+	uint32_t i;
+	if(!data) return PTR_ERROR;
+
+	for(i = 0; i < length; ++i)
+		my_reverse((((uint8_t*)data) + i),  4);
+
+	return SUCCESS;
+}
+
+void print_memory(uint8_t* start, uint32_t length)
+{
+	uint32_t i;
+	if(!start) return;
+
+	for(i = 0; i < length; ++i)
+		printf("%x ", *(start + i));
+}
+
+circbuf.c/      0           0     0     644     2285      `
+#include "circbuf.h"
+
+CircBufState BufferInit(CircBuf* CB, uint32_t size){
+	
+	if(!CB) return PTR_ERROR_BUF;
+	if(size == 0) return INIT_FAILURE;
+	CB->buffer = (CircBufData_t*)malloc(sizeof(CircBufData_t) * size);
+	if(!(CB->buffer)) return HEAP_FULL;
+	CB->head = CB->buffer;
+	CB->tail = CB->buffer;
+	CB->length = size;
+	CB->count = 0;
+	return SUCCESS_BUF;
+}
+
+CircBufState BufferAdd(CircBuf* CB, CircBufData_t item){
+	
+	if(!CB || !(CB->buffer)) return PTR_ERROR_BUF;
+	if(CB->count == 0){ // handle empty buffer case
+		*(CB->head) = item;
+		(CB->count)++;
+		return SUCCESS_BUF;
+	}
+	if(CB->count <= CB->length){
+		CB->head = (CB->head < (CB->buffer + CB->length) ? CB->head + 1 : CB->buffer);
+		*(CB->head) = item;
+		if(CB->count == CB->length){  // handle full buffer (overwrite)
+			return OVERWRITE;
+		}
+		else{  // handle not full not empty buffer
+			(CB->count)++;
+		 	return SUCCESS_BUF;
+		}	
+	}	
+}
+
+CircBufState BufferRemove(CircBuf* CB, CircBufData_t* item){
+
+	if(!CB || !(CB->buffer) ) return PTR_ERROR_BUF;
+	if(CB->count == 0){
+		return ITEM_REMOVE_FAILURE;	
+	}
+	if(CB->count == 1){ // return to empty state
+		if(item) *item = *(CB->tail);
+		CB->tail = CB->buffer;
+		CB->head = CB->buffer;
+		CB->count = 0;
+		return SUCCESS_BUF;
+	}	
+	if(item) *item = *(CB->tail);
+	CB->tail = (CB->tail > CB->buffer ? CB->tail - 1 : CB->tail + CB->length);	
+	(CB->count)--;
+	return SUCCESS_BUF;
+}
+
+CircBufState BufferFull(CircBuf* CB){
+
+	if(!CB) return PTR_ERROR_BUF;
+	if(CB->count == CB->length) return BUFFER_FULL;	
+	else return BUFFER_NOT_FULL;
+}
+
+CircBufState BufferEmpty(CircBuf* CB){
+
+	if(!CB) return PTR_ERROR_BUF;
+	if(CB->count == 0) return BUFFER_EMPTY;
+	else return BUFF_NOT_EMPTY;
+}
+
+CircBufState BufferPeek(CircBuf* CB, CircBufData_t* item_n, uint32_t n){
+// returns nth oldest item
+	if(!CB || !item_n || !(CB->buffer)) return PTR_ERROR_BUF;
+	if(n > CB->count || n < 1) return INVALID_PEEK;
+	*item_n = (CB->tail + (n - 1) > CB->buffer + CB->length ? *(CB->tail + (n -1) - CB->length) : *(CB->tail + (n - 1)));
+	 // Something is wrong here ^
+	return SUCCESS_BUF;
+}
+
+CircBufState BufferDestroy(CircBuf* CB){
+
+	if(!CB || !(CB->buffer)) return PTR_ERROR_BUF;
+	free(CB->buffer);
+	CB->length = 0;
+	CB->count = 0;
+	CB->head = NULL;
+	CB->tail = NULL;
+	CB->buffer = NULL;
+	return SUCCESS_BUF;
+}
+
+memory.c/       0           0     0     644     938       `
+#include "memory.h"
+
+int8_t my_memmove(uint8_t* src, uint8_t* dst, uint32_t length)
+{
+
+	uint32_t i;
+	if( !src || !dst ) return PTR_ERROR;
+
+	if(src > dst)
+	{
+		for(i = 0; i < length; ++i)
+			*(dst + i) = *(src + i);
+	}
+	else if(src < dst)
+	{
+		for(i = length; i > 0; --i)
+			*(dst + i - 1) =  *(src + i - 1);
+	}
+	return SUCCESS;
+
+}
+int8_t my_memset(uint8_t* src, uint32_t length, uint8_t value)
+{
+	uint32_t i;
+	if( !src ) return PTR_ERROR;
+
+	for(i = 0; i < length; ++i)
+		*(src + i) = value;
+
+	return SUCCESS;
+}
+
+int8_t my_memzero(uint8_t* src, uint32_t length)
+{
+	uint32_t i;
+	if( !src ) return PTR_ERROR;
+
+	for(i = 0; i < length; ++i)
+		*(src + i) = 0;
+
+	return SUCCESS;
+}
+
+int8_t my_reverse(uint8_t* src, uint32_t length)
+{
+	if( !src ) return PTR_ERROR;
+  uint32_t i;
+	uint8_t temp;
+
+	for(i = 0; i < length >> 1; ++i)
+	{
+		temp = *(src + i);
+		*(src + i)= *(src + length - 1 - i);
+		*(src + length -1 - i) = temp;
+	}
+	return SUCCESS;
+}
