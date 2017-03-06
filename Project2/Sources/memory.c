@@ -8,12 +8,12 @@ int8_t my_memmove(uint8_t* src, uint8_t* dst, uint32_t length)
 
 	if(src > dst)
 	{
-		for(i = 0; i < length; ++i)
+		for(i = 0; i < length; i++)
 			*(dst + i) = *(src + i);
 	}
 	else if(src < dst)
 	{
-		for(i = length; i > 0; --i)
+		for(i = length; i > 0; i--)
 			*(dst + i - 1) =  *(src + i - 1);
 	}
 	return SUCCESS;
