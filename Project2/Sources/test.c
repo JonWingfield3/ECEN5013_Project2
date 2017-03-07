@@ -12,12 +12,13 @@
 #include "defines.h"
 /*
 #include "mock_circbuf.h"
-#include "mock_data.h"
+#include "mock_data.h" */
 #include "mock_memory.h"
-*/
+
 
 #include <stdint.h>
 
+#ifdef MEMORY
 static void test_invalid_pointer_memmove(void **state) {
   uint8_t * src = NULL;
   uint8_t dst[] = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE};
@@ -210,27 +211,65 @@ static void test_check_characters_reverse(void **state) {
     assert_true(src[i] == comp[i]);
   }
 }
-#ifdef TEM
+#endif
 /**********************************************/
-
+#ifdef DATA
 static void test_invalid_pointer_BtL(void **state) {
+  uint8_t * src = NULL;
+  uint32_t length = 1;
 
+  int ret = (int) big_to_little32((uint32_t *)src, length);
+  assert_int_equal(ret, PTR_ERROR);
 }
 
 static void test_valid_converstion_BtL(void **state) {
+  uint8_t * src = NULL;
+  uint8_t arr[] = {0xAA, 0xBB, 0xCC, 0xDD};
+  uint32_t ar1[] = {0xDDCCBBAA};
+  uint8_t ar2[] = {0xDD,0xCC,0xBB,0xAA};
+  src = arr;
+  uint32_t length = 1;
+  int i;
+  will_return(__wrap_my_reverse, ar1);
+  will_return(__wrap_my_reverse, SUCCESS);
 
+  int ret = big_to_little32((uint32_t *)src, length);
+
+  assert_int_equal(ret, SUCCESS);
+  for(i = 0; i < 4; i++) {
+    assert_true(arr[i] == ar2[i]);
+  }
 }
 
 static void test_invalid_ptr_LtB(void **state) {
+  uint8_t * src = NULL;
+  uint32_t length = 1;
 
+  int ret = (int) little_to_big32((uint32_t *)src, length);
+  assert_int_equal(ret, PTR_ERROR);
 }
 
 static void test_valid_conversion_LtB(void **state) {
+  uint8_t * src = NULL;
+  uint8_t arr[] = {0xAA, 0xBB, 0xCC, 0xDD};
+  uint32_t ar1[] = {0xDDCCBBAA};
+  uint8_t ar2[] = {0xDD,0xCC,0xBB,0xAA};
+  src = arr;
+  uint32_t length = 1;
+  int i;
+  will_return(__wrap_my_reverse, ar1);
+  will_return(__wrap_my_reverse, SUCCESS);
 
+  int ret = little_to_big32((uint32_t *)src, length);
+
+  assert_int_equal(ret, SUCCESS);
+  for(i = 0; i < 4; i++) {
+    assert_true(arr[i] == ar2[i]);
+  }
 }
-
+#endif
 /************************************************/
-
+#ifdef CIRCBUF
 static void test_allocate_free(void **state) {
 
 }
@@ -274,6 +313,7 @@ static void test_over_empty(void **state) {
 
 int main() {
   const struct CMUnitTest tests[] = {
+#ifdef MEMORY
     cmocka_unit_test(test_invalid_pointer_memmove),
     cmocka_unit_test(test_overlap_memmove),
     cmocka_unit_test(test_SRC_DST_overlap_memmove),
@@ -286,10 +326,14 @@ int main() {
     cmocka_unit_test(test_odd_reverse),
     cmocka_unit_test(test_even_reverse),
     cmocka_unit_test(test_check_characters_reverse),
-/*    cmocka_unit_test(test_invalid_pointer_BtL),
+#endif
+#ifdef DATA
+    cmocka_unit_test(test_invalid_pointer_BtL),
     cmocka_unit_test(test_valid_converstion_BtL),
     cmocka_unit_test(test_invalid_ptr_LtB),
     cmocka_unit_test(test_valid_conversion_LtB),
+#endif
+#ifdef CIRCBUF
     cmocka_unit_test(test_allocate_free),
     cmocka_unit_test(test_invalid_pointer_circbuf),
     cmocka_unit_test(test_non_init_buff),
@@ -299,7 +343,8 @@ int main() {
     cmocka_unit_test(test_wrap_add),
     cmocka_unit_test(test_wrap_remove),
     cmocka_unit_test(test_over_fill),
-    cmocka_unit_test(test_over_empty), */
+    cmocka_unit_test(test_over_empty),
+#endif
   };
 
   return cmocka_run_group_tests(tests, NULL, NULL);

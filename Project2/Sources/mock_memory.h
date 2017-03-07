@@ -1,6 +1,10 @@
 #ifndef __MOCK_MEMORY_H
 #define __MOCK_MEMORY_H
 
+#include <stdbool.h>
+#include <stdarg.h>
+#include <setjmp.h>
+#include <stdlib.h>
 #include <cmocka.h>
 #include <stdint.h>
 #include "defines.h"

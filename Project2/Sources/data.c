@@ -71,8 +71,8 @@ int8_t big_to_little32(uint32_t* data, uint32_t length)
 	uint32_t i;
 	if(!data) return PTR_ERROR;
 
-	for(i = 0; i < length; ++i)
-		my_reverse((((uint8_t*)data) + i), 4);
+	for(i = 0; i < length; i++)
+		my_reverse((((uint8_t*)data) + 4*i), 4);
 
 	return SUCCESS;
 }
@@ -82,8 +82,8 @@ int8_t little_to_big32(uint32_t* data, uint32_t length)
 	uint32_t i;
 	if(!data) return PTR_ERROR;
 
-	for(i = 0; i < length; ++i)
-		my_reverse((((uint8_t*)data) + i),  4);
+	for(i = 0; i < length; i++)
+		my_reverse((((uint8_t*)data) + 4*i),  4);
 
 	return SUCCESS;
 }

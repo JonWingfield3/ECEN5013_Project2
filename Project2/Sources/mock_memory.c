@@ -1,4 +1,4 @@
-/*#include "mock_memory.h"
+#include "mock_memory.h"
 
 int8_t __wrap_my_memmove(uint8_t* src, uint8_t* dst, uint32_t length) {
   check_expected_ptr(src);
@@ -20,8 +20,6 @@ int8_t __wrap_my_memzero(uint8_t* src, uint32_t length) {
 }
 
 int8_t __wrap_my_reverse(uint8_t* src, uint32_t length) {
-  check_expected_ptr(src);
-
+  src = (uint8_t *)mock();
   return (int8_t) mock();
 }
-*/
