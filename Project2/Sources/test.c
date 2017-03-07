@@ -115,31 +115,102 @@ static void test_check_set_memset(void **state) {
   assert_int_equal(ret1, SUCCESS);
   assert_int_equal(ret2, SUCCESS);
 }
-#ifdef TEM
-static void test_invalid_pointer_memzero(void **state) {
 
+static void test_invalid_pointer_memzero(void **state) {
+  uint8_t * src = NULL;
+  uint32_t length = 5;
+
+  int ret = (int) my_memzero(src, length);
+
+  assert_int_equal(ret, PTR_ERROR);
 }
 
 static void test_check_set_memzero(void **state) {
+  uint8_t * src = NULL;
+  uint8_t arr[] = {1,2,3,4,5,6,7};
+  src = arr;
+  uint32_t length = 5;
+  int i;
 
+  int ret1 = (int) my_memzero(src, length);
+  for(i = 0; i < length; i++) {
+    assert_true(*(src+i) == 0);
+  }
+
+  length = 2;
+  uint8_t ard[] = {1,2,3,4,5,6,7};
+  src = ard;
+  src = src + 3;
+
+  int ret2 = (int) my_memzero(src, length);
+  for(i = 0; i < length; i++) {
+    assert_true(*(src+i) == 0);
+  }
+
+  assert_int_equal(ret1, SUCCESS);
+  assert_int_equal(ret2, SUCCESS);
 }
 
 static void test_invalid_pointer_reverse(void **state) {
+  uint8_t * src = NULL;
+  uint32_t length = 5;
 
+  int ret = (int) my_reverse(src, length);
+
+  assert_int_equal(ret, PTR_ERROR);
 }
 
 static void test_odd_reverse(void **state) {
+  uint8_t src[] = {1,2,3,4,5};
+  uint32_t length = 5;
 
+  uint8_t comp[] = {5,4,3,2,1};
+  int i;
+
+  int ret = (int) my_reverse(src, length);
+
+  assert_int_equal(ret, SUCCESS);
+  for(i = 0; i < length; i++) {
+    assert_true(src[i] == comp[i]);
+  }
 }
 
 static void test_even_reverse(void **state) {
+  uint8_t src[] = {1,2,3,4};
+  uint32_t length = 4;
 
+  uint8_t comp[] = {4,3,2,1};
+  int i;
+
+  int ret = (int) my_reverse(src, length);
+
+  assert_int_equal(ret, SUCCESS);
+  for(i = 0; i < length; i++) {
+    assert_true(src[i] == comp[i]);
+  }
 }
 
 static void test_check_characters_reverse(void **state) {
+  uint8_t src[256];
+  uint32_t length = 256;
+  int i;
+  for(i = 0; i < (int)length; i++) {
+    src[i] = i;
+  }
 
+  uint8_t comp[256];
+  for(i = 0; i < (int)length; i++) {
+    comp[i] = 255 - i;
+  }
+
+  int ret = (int) my_reverse(src, length);
+
+  assert_int_equal(ret, SUCCESS);
+  for(i = 0; i < length; i++) {
+    assert_true(src[i] == comp[i]);
+  }
 }
-
+#ifdef TEM
 /**********************************************/
 
 static void test_invalid_pointer_BtL(void **state) {
@@ -209,13 +280,13 @@ int main() {
     cmocka_unit_test(test_DST_SRC_overlap_memmove),
     cmocka_unit_test(test_invalid_pointer_memset),
     cmocka_unit_test(test_check_set_memset),
-/*    cmocka_unit_test(test_invalid_pointer_memzero),
+    cmocka_unit_test(test_invalid_pointer_memzero),
     cmocka_unit_test(test_check_set_memzero),
     cmocka_unit_test(test_invalid_pointer_reverse),
     cmocka_unit_test(test_odd_reverse),
     cmocka_unit_test(test_even_reverse),
     cmocka_unit_test(test_check_characters_reverse),
-    cmocka_unit_test(test_invalid_pointer_BtL),
+/*    cmocka_unit_test(test_invalid_pointer_BtL),
     cmocka_unit_test(test_valid_converstion_BtL),
     cmocka_unit_test(test_invalid_ptr_LtB),
     cmocka_unit_test(test_valid_conversion_LtB),

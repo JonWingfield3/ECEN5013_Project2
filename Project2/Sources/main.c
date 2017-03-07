@@ -29,11 +29,18 @@
  */
 
 #include "MKL25Z4.h"
+#include "uart.h"
+#include "circbuf.h"
+#include "defines.h"
+#include "log.h"
+#include "memory.h"
+#include "data.h"
 
 static int i = 0;
 
 int main(void)
 {
+	uart_configure(br38400, 0);
 
 }
 ////////////////////////////////////////////////////////////////////////////////
