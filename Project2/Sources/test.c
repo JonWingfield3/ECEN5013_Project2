@@ -17,6 +17,7 @@
 #include <stdint.h>
 
 #ifdef MEMORY
+// Will test that memmove returns properly when passed a null pointer input
 static void test_invalid_pointer_memmove(void **state) {
   uint8_t * src = NULL;
   uint8_t dst[] = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE};
@@ -35,6 +36,7 @@ static void test_invalid_pointer_memmove(void **state) {
   assert_int_equal(ret2, PTR_ERROR);
 }
 
+// Tests that memmove works correctly on memory regions with no overlap
 static void test_overlap_memmove(void **state) {
   uint8_t src[] = {0xAA, 0xBB, 0xCC, 0xDD};
   uint8_t dst[] = {0xEE,0xFF,0x00,0x11};
@@ -49,6 +51,7 @@ static void test_overlap_memmove(void **state) {
   }
 }
 
+// Tests that memmove works correctly when the source region is a subset of the destination region
 static void test_SRC_DST_overlap_memmove(void **state) {
   uint8_t dst[] = {0xAA, 0xBB, 0xCC, 0xDD};
   uint8_t * src = dst + 1;
@@ -68,6 +71,7 @@ static void test_SRC_DST_overlap_memmove(void **state) {
   }
 }
 
+// Tests that memmove works correctly when the destination region is  a subset of the source region
 static void test_DST_SRC_overlap_memmove(void **state) {
   uint8_t src[] = {0xAA, 0xBB, 0xCC, 0xDD};
   uint8_t * dst = src + 1;
@@ -85,6 +89,7 @@ static void test_DST_SRC_overlap_memmove(void **state) {
   }
 }
 
+// Tests that memset returns correctly with null pointer input
 static void test_invalid_pointer_memset(void **state) {
   uint8_t * src = NULL;
   uint32_t length = 4;
@@ -95,6 +100,7 @@ static void test_invalid_pointer_memset(void **state) {
   assert_int_equal(ret, PTR_ERROR);
 }
 
+// Tests that memset works correctly for entire array and susbset of array
 static void test_check_set_memset(void **state) {
   uint8_t * src;
   uint8_t arr[] = {9,8,7,6,5,0};
@@ -121,6 +127,7 @@ static void test_check_set_memset(void **state) {
   assert_int_equal(ret2, SUCCESS);
 }
 
+// Tests that memzero returns correctly with null pointer input
 static void test_invalid_pointer_memzero(void **state) {
   uint8_t * src = NULL;
   uint32_t length = 5;
@@ -130,6 +137,7 @@ static void test_invalid_pointer_memzero(void **state) {
   assert_int_equal(ret, PTR_ERROR);
 }
 
+// Tests that memzero works correctly for  entire array and subset of array
 static void test_check_set_memzero(void **state) {
   uint8_t * src = NULL;
   uint8_t arr[] = {1,2,3,4,5,6,7};
@@ -156,6 +164,7 @@ static void test_check_set_memzero(void **state) {
   assert_int_equal(ret2, SUCCESS);
 }
 
+// Test that reverse returns correctly with null pointer input
 static void test_invalid_pointer_reverse(void **state) {
   uint8_t * src = NULL;
   uint32_t length = 5;
@@ -165,6 +174,7 @@ static void test_invalid_pointer_reverse(void **state) {
   assert_int_equal(ret, PTR_ERROR);
 }
 
+// Tests that reverse functions correctly for odd numbered arrays
 static void test_odd_reverse(void **state) {
   uint8_t src[] = {1,2,3,4,5};
   uint32_t length = 5;
@@ -180,6 +190,7 @@ static void test_odd_reverse(void **state) {
   }
 }
 
+// Test that reverse functions correctly for even numbered arrays
 static void test_even_reverse(void **state) {
   uint8_t src[] = {1,2,3,4};
   uint32_t length = 4;
@@ -195,6 +206,7 @@ static void test_even_reverse(void **state) {
   }
 }
 
+// Tests that reverse correctly revereses input arrays
 static void test_check_characters_reverse(void **state) {
   uint8_t src[256];
   uint32_t length = 256;
@@ -218,6 +230,7 @@ static void test_check_characters_reverse(void **state) {
 #endif
 /**********************************************/
 #ifdef DATA
+// Test that big to little returns correctly with null pointer input
 static void test_invalid_pointer_BtL(void **state) {
   uint8_t * src = NULL;
   uint32_t length = 1;
@@ -226,6 +239,7 @@ static void test_invalid_pointer_BtL(void **state) {
   assert_int_equal(ret, PTR_ERROR);
 }
 
+// Tests that big to little correctly converts inputs
 static void test_valid_converstion_BtL(void **state) {
   uint8_t * src = NULL;
   uint8_t arr[] = {0xAA,0xBB,0xCC,0xDD,0xEE,0xFF,0x00,0x11};
@@ -250,6 +264,7 @@ static void test_valid_converstion_BtL(void **state) {
   }
 }
 
+// Test that little to big returns correctly with null pointer input
 static void test_invalid_pointer_LtB(void **state) {
   uint8_t * src = NULL;
   uint32_t length = 1;
@@ -258,6 +273,7 @@ static void test_invalid_pointer_LtB(void **state) {
   assert_int_equal(ret, PTR_ERROR);
 }
 
+// Tests that little to big correctly converts inputs
 static void test_valid_conversion_LtB(void **state) {
   uint8_t * src = NULL;
   uint8_t arr[] = {0xAA,0xBB,0xCC,0xDD,0xEE,0xFF,0x00,0x11};
@@ -284,6 +300,7 @@ static void test_valid_conversion_LtB(void **state) {
 #endif
 /************************************************/
 #ifdef CIRCBUF
+// Test that bufferinit functions correctly for various inputs
 static void test_allocate_free(void **state) {
   CircBuf buf;
   uint32_t size = 0;
@@ -305,6 +322,7 @@ static void test_allocate_free(void **state) {
   assert_int_equal(ret, SUCCESS_BUF);
 }
 
+// Test that all functions in circbuf return correctly with null pointer input
 static void test_invalid_pointer_circbuf(void **state) {
   CircBuf buf;
   uint32_t size = 256;
@@ -353,6 +371,7 @@ static void test_invalid_pointer_circbuf(void **state) {
   assert_int_equal(ret, SUCCESS_BUF);
 }
 
+// Tests that buffer is initialized
 static void test_non_init_buff(void **state) {
   CircBuf buf;
   uint32_t size = 256;
@@ -365,6 +384,7 @@ static void test_non_init_buff(void **state) {
   assert_int_equal(ret, SUCCESS_BUF);
 }
 
+// Tests that removed items are identical to the added items
 static void test_add_remove(void **state) {
   CircBuf buf;
   uint32_t size = 256;
@@ -382,6 +402,7 @@ static void test_add_remove(void **state) {
   assert_int_equal(ret, SUCCESS_BUF);
 }
 
+// Tests that bufferfull returns correctly when buffer is full
 static void test_buffer_full(void **state) {
   CircBuf buf;
   uint32_t size = 256;
@@ -403,6 +424,7 @@ static void test_buffer_full(void **state) {
   assert_int_equal(ret, SUCCESS_BUF);
 }
 
+// Tests that buferempty returns correctly based on buffer state
 static void test_buffer_empty(void **state) {
   CircBuf buf;
   uint32_t size = 256;
@@ -424,6 +446,7 @@ static void test_buffer_empty(void **state) {
   assert_int_equal(ret, SUCCESS_BUF);
 }
 
+// Test that buffer adds across wrap
 static void test_wrap_add(void **state) {
   CircBuf buf;
   uint32_t size = 256;
@@ -447,6 +470,7 @@ static void test_wrap_add(void **state) {
   assert_int_equal(ret, SUCCESS_BUF);
 }
 
+// Tests that buffer removes across wrap
 static void test_wrap_remove(void **state) {
   CircBuf buf;
   uint32_t size = 256;
@@ -477,6 +501,7 @@ static void test_wrap_remove(void **state) {
   assert_int_equal(ret, SUCCESS_BUF);
 }
 
+// Test that buffer doesn't overwrite
 static void test_over_fill(void **state) {
   CircBuf buf;
   uint32_t size = 256;
@@ -497,6 +522,7 @@ static void test_over_fill(void **state) {
   assert_int_equal(ret, SUCCESS_BUF);
 }
 
+// Tests that buffer deosn't remove from an empty buffer
 static void test_over_empty(void **state) {
   CircBuf buf;
   uint32_t size = 256;
