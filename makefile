@@ -59,7 +59,7 @@ $(TEST) : $(TEST_SRCS) $(LIB)
 
 .PHONY : clean
 clean : FORCE
-	-rm -rf *~ *.o $(LIB) $(EXE) $(TEST) *.dSYM/
+	-rm -rf *~ ./Project2/Sources/*.o $(LIB) $(EXE) $(TEST) *.dSYM/
 
 .PHONY : clobber
 clobber : $(SUBDIRS) clean
