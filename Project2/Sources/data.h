@@ -3,7 +3,6 @@
 
 // standard includes
 #include <stdint.h>
-
 // local includes
 #include "memory.h"
 #include "defines.h"

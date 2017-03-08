@@ -30,18 +30,18 @@
 #include <stdint.h>
 #include "MKL25Z4.h"
 #include "uart.h"
-#include "circbuf.h"
-#include "defines.h"
+//#include "circbuf.h"
+//#include "defines.h"
 //#include "log.h"
-#include "memory.h"
-#include "data.h"
+//#include "memory.h"
+//#include "data.h"
 
 static int i = 0;
 
 int main(void)
 {
 	//NVIC_EnableIRQ(UART0_IRQn);
-	uart_configure(br38400, 0);
+	uart_configure(br38400);
 	//__enable_irq();
 	uint8_t data;
 	while(1){

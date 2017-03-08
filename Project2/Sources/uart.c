@@ -27,7 +27,6 @@ UART_RETURN uart_configure(STD_BAUD br) {
 	UART0_C1 = 0x00;
 	UART0_C3 = 0x00;
 	UART0_C4 = 0x00;
-
 	UART0_BDH = 0x00;
 
 	// Set Baud Rate
@@ -72,11 +71,11 @@ UART_RETURN uart_receive_byte(uint8_t* buffer) {
 	return SUCCESS;
 }
 
-UART_RETURN uart_receive_byte_n(uint8_t* data, uint32_t length) {
+UART_RETURN uart_receive_byte_n(uint8_t* buffer, uint32_t length) {
 
 	uint32_t i ;
 	for(i = 0; i < length; ++i){
-		uart_receive_byte(data + i);
+		uart_receive_byte(buffer + i);
 	}
 	return SUCCESS;
 }
