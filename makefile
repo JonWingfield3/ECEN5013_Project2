@@ -20,7 +20,7 @@ cmocka : $(SUBDIRS)
 
 CFLAGS += -I $(CMOCKA_INCLUDE_DIR)
 
-TEST_VER = MEM
+TEST_VER ?= MEM
 
 TEST_FLAGS = -std=c99 -Wall -Werror -g -O0 -I $(CMOCKA_INCLUDE_DIR)
 

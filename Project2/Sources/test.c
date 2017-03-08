@@ -308,30 +308,6 @@ static void test_allocate_free(void **state) {
 static void test_invalid_pointer_circbuf(void **state) {
   CircBuf buf;
   uint32_t size = 256;
-  int ret = (int) BufferInit(&buf, size);
-  assert_int_equal(ret, SUCCESS_BUF);
-
-
-
-  ret = (int) BufferDestroy(&buf);
-  assert_int_equal(ret, SUCCESS_BUF);
-}
-
-static void test_non_init_buff(void **state) {
-  CircBuf buf;
-  uint32_t size = 256;
-  int ret = (int) BufferInit(&buf, size);
-  assert_int_equal(ret, SUCCESS_BUF);
-
-
-
-  ret = (int) BufferDestroy(&buf);
-  assert_int_equal(ret, SUCCESS_BUF);
-}
-
-static void test_add_remove(void **state) {
-  CircBuf buf;
-  uint32_t size = 256;
   int ret;
   CircBufData_t data = 28;
   CircBufData_t * ptr = NULL;
@@ -373,6 +349,35 @@ static void test_add_remove(void **state) {
   ret = (int) BufferPeek(&buf, ptr, n);
   assert_int_equal(ret, PTR_ERROR_BUF);
 /*******************************************/
+  ret = (int) BufferDestroy(&buf);
+  assert_int_equal(ret, SUCCESS_BUF);
+}
+
+static void test_non_init_buff(void **state) {
+  CircBuf buf;
+  uint32_t size = 256;
+  int ret = (int) BufferInit(&buf, size);
+  assert_int_equal(ret, SUCCESS_BUF);
+
+  assert_true(buf.buffer);
+
+  ret = (int) BufferDestroy(&buf);
+  assert_int_equal(ret, SUCCESS_BUF);
+}
+
+static void test_add_remove(void **state) {
+  CircBuf buf;
+  uint32_t size = 256;
+  CircBufData_t data = 26;
+  CircBufData_t ptr;
+  int ret = (int) BufferInit(&buf, size);
+  assert_int_equal(ret, SUCCESS_BUF);
+
+  BufferAdd(&buf, data);
+  BufferRemove(&buf, &ptr);
+
+  assert_true(ptr == data);
+
   ret = (int) BufferDestroy(&buf);
   assert_int_equal(ret, SUCCESS_BUF);
 }
