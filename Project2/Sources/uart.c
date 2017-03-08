@@ -32,19 +32,23 @@ UART_RETURN uart_configure(STD_BAUD br) {
 	// Set Baud Rate
 	switch((uint32_t) br)
 	{
-		case 9600:  UART0_BDL = 130; break;
-		case 19200: UART0_BDL = 65;  break;
-		case 38400: UART0_BDL = 32;  break;
-		case 57600: UART0_BDL = 21;  break;
-		case 115200:UART0_BDL = 11;  break;
+		case 9600:   UART0_BDL = 130; break;
+		case 19200:  UART0_BDL = 65;  break;
+		case 38400:
+			UART0_C4 = 4;
+			UART0_BDL = 104;  break;
+		case 57600:  UART0_BDL = 22;  break;
+		case 115200: UART0_BDL = 11;  break;
 	}
 
 #ifdef INTERRUPTS
 	BufferInit(&TXBuf, DEFAULT_BUF_SIZE);
 	BufferInit(&RXBuf, DEFAULT_BUF_SIZE);
+	UART0_C2 = UART0_C2_TIE_MASK | UART0_C2_RIE_MASK;
+
 #endif
 
-	UART0_C2 = UART_C2_RE_MASK | UART0_C2_TE_MASK;
+	UART0_C2 |= UART_C2_RE_MASK | UART0_C2_TE_MASK;
 }
 
 
@@ -78,6 +82,26 @@ UART_RETURN uart_receive_byte_n(uint8_t* buffer, uint32_t length) {
 		uart_receive_byte(buffer + i);
 	}
 	return SUCCESS;
+}
+
+extern void UART0_IRQHandler(void){
+
+	uint8_t data = 0;
+
+	if(UART0_S1 & UART_S1_TDRE_MASK){
+		if(BufferEmpty(&TXBuf) == BUFFER_NOT_EMPTY){
+			UART0_D = data;
+		}
+		else{
+			UART0_C2 &= ~UART0_C2_TIE_MASK;
+		}
+	}
+	if(UART0_S1 & UART_S1_RDRF_MASK){
+		if(BufferFull(&RXBuf) == BUFFER_FULL){
+			data = UART0_D;
+		}
+	}
+
 }
 
 

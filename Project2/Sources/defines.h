@@ -11,5 +11,7 @@
 #define PTR_ERROR (int8_t) -1
 #define SUCCESS (int8_t) 0
 
+//#define INTERRUPTS
+#define DEFAULT_BUF_SIZE 256
 
 #endif /* SOURCES_DEFINES_H_ */

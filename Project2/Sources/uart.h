@@ -10,6 +10,7 @@
 #include "MKL25Z4.h"
 #include "defines.h"
 #include "circbuf.h"
+
 typedef enum {
 	example
 }UART_RETURN;
@@ -18,7 +19,7 @@ typedef enum {
 	br9600 = 9600,
 	br19200 = 19200,
 	br38400 = 38400,
-	br57200 = 57600,
+	br57600 = 57600,
 	br115200 = 115200
 }STD_BAUD;
 

@@ -23,7 +23,7 @@ log_error log_data(uint8_t* data, uint32_t length);
 
 log_error log_string(uint8_t* string);
 
-log_error log_integer(uint8_t num);
+log_error log_integer(int32_t num);
 
 log_error log_flush(void);
 
