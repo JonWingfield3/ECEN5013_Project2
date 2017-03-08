@@ -1,0 +1,1 @@
+gcc -std=c99 -v -Wall -Werror -g -O0 -I 3rd-party/build-Debug/include -o test.out Project2/Sources/test.c libutils.a 3rd-party/build-Debug/lib/libcmocka.a -lm

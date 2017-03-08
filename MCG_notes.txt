@@ -1,0 +1,140 @@
+Multipurpose Clock Generator (MCG)
+Chapter 24 of TRM
+
+MCG provides clock sources for MCU
+
+CAN ONLY BE WRITTEN TO IN SUPERVISOR MODE
+
+contains FLL and PLL
+
+FLL can be controlled by internal or external ref clk (MCGFLLCLK)
+	- DCO with 4 programmable frequencies
+	- reference dividers available
+
+PLL can be controlled by external ref clk (MCGPLLCLK)
+	- VCO, external ref clk used as source
+	- ref dividers available
+
+Internal Ref Clk generator (MCGIRCLK)
+	- driven by slow clk = 32kHz
+	- or driven by fast clk = 4MHz, ref dividers available (FRCDIV) can divide down to 32kHz
+	- can be used to source FLL or other peripherals on chip
+	- enabled when C1.IRCLKEN = 1
+
+External clock
+	- Comes from crystal oscillator
+	- can source FLL or PLL
+	- can be clock source for MCU
+	
+Fixed Frequency Clock (MCGFFCLK)
+	- can be source for on-chip peripherals
+	- driven by either slow IRC or ext ref clk or osc
+	- source selected by C1.IREFS
+	- synced with peripheral bus clk
+
+
+MCU system clk can be selected to be sourced by PLL,CLL, internal or external ref clks
+
+
+MODES
+	FEI: FLL engaged internal
+	- default mode of operation
+	- MCGOUTCLK derived from FLLCLK (DCOCLK) controlled by 32k IRC
+	- C1.CLKS = 00, C1.IREFS = 1, C6.PLLS = 0
+		
+	FEE: FLL engaged external
+	-  C1.IREFS = 0
+	- MCGOUTCLK derived from FLLCLK controlled by ext ref clk
+
+	FBI: FLL bypassed internal
+	- MCGOUTCLK derived from slow or fast IRC
+	- C1.CLKS = 01, C1.IREFS = 1, C6.PLLS = 0, C2.LP = 0
+	- FLL is operational but unused
+
+	FBE: FLL Bypassed External
+	- MCGOUTCLK derived from ext ref clk
+
+	PEE: PLL Engaged External
+	- MCGOUTCLK derived from PLLCLK, which is controlled by ext ref clk
+
+	PBE: PLL Bypassed External
+	- MCGOUTCLK derived from ext ref clk
+	- PLL unused
+
+	BLPI:
+	BLPE: both low power bypass
+	Stop: MCU entered stop state
+
+
+REGISTERS:
+	MCG_C1: {CLKS, FRDIV, IREFS, IRCLKEN, IREFSTEN}
+	- CLKS --> selects source for MCGOUTCLK
+	- FRDIV --> bits used to divide FLL
+	- IREFS --> selects ref clk src for FLL
+	- IRCLKEN --> enables internal rec clk to be used as MCGIRCLK
+	- IREFSTEN --> selects if MCGIRCLK is enabled in STOP mode
+
+	MCG_C2: {LOCRE0, 0, RANGE0, HGO0, EREFS0, LP, IRCS}
+	- LOCRE0 --> loss of clock reset enable
+	- RANGE0 --> selects frequency for external clock source
+	- HGO0 --> puts crystal osc in low-power or high-gain mode
+	- EREFS0 --> selects source for ext ref clk (osc or ext ref clk)
+	- LP --> controls if FLL/PLL is disabled in LPM
+	- IRCS --> selects between fast or slow int ref clk src
+
+	MCG_C3: {SCTRIM}
+	- Slow internal ref clk trim setting
+	- can be used to increase period of internal ref clk 
+
+	MCG_C4: {DMX32, DRST_DRS, FCTRIM, SCFTRIM}
+	- DMX32 --> DCO max frequency is 32kHz
+	- DRST_DRS --> selects freq range for FLL output, DCOOUT
+	- FCTRIM --> fast internal ref clk trim setting
+	- SCFTRIM --> fine trim of slow internal ref clk
+
+	MCG_C5: {0, PLLCLKEN0, PLLSTEN0, PRDIV0}
+	- PLLCLKEN0 --> enables MCGPLLCLK
+	- PLLSTEN0  --> enables MCGPLLCLK in Normal Stop mode
+	- PRDIV0 --> used to divide PLL external ref
+
+	MCG_C6: {LOLIE0, PLLS, CME0, VDIV0}
+	- LOLIE0 --> generate IRQ if loss of lock
+	- PLLS --> selects PLL or FLL as MCG source if CLKS == 0b00
+	- CME0 --> enables ext clk monitor for OSC0
+	- VDIV0 --> dividing factor for VC0 output of PLL
+
+	MCG_S: {LOLS, LOCK0, PLLST, IREFST, CLKST, OSCINIT0, IRCST}
+	- LOLS --> indicates loss of lock for PLL
+	- LOCK0 --> indicates if PLL is currently unlocked/locked
+	- PLLST --> selects source of PLLS as FLL or PLL output clk
+	- IREFST --> selects source of FLL as ext ref clk/ int ref clk
+	- CLKST --> indicates current clock mode : FLL, int ref, ext ref, PLL
+	- OSCINIT0 --> set to 1 after osc has initialized
+	- IRCST --> selecs source of int ref clk as slow(32k)/fast(4M) clk
+
+	MCG_SC: {ATME, ATMS, ATMF, FLTPRSRV, FCRDIV, LOCS0}
+	- ATME --> enables Auto Trim Machine
+	- ATMS --> selects IRCS clk for Auto Trim Test (totally unneccessary)
+	- ATMF --> indicates failure of ATM
+	- FLLPRSRV --> preserves FLL filter values
+	- FRCDIV --> division factor for fast clk int ref
+	- LOCS0 --> indicates loss of OSC0
+	
+	MCG_ATCVH
+	MCG_ATCVL
+	
+	MCG_C7: {Reserved}
+	
+	MCG_C8: {0,LOLRE, 0's}
+	- LOLRE --> enables reset request if PLL loss of lock occurs
+
+	MCG_C9: {Reserved}
+	
+	MCG_C10: {Reserved}
+	
+	
+INITIALIZATION:
+
+	- MCG comes out of reset in FEI mode
+	- mode switching described, pg 391-403	
+

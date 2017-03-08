@@ -2,12 +2,16 @@
 #define __DATA_H__
 
 // standard includes
-#include <stdio.h>
 #include <stdint.h>
 
 // local includes
 #include "memory.h"
 #include "defines.h"
+#define FRDM
+
+#ifndef FRDM
+#include <stdio.h>
+#endif
 
 /****************************************************************
 *	File: data.h

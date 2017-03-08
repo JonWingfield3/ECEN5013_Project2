@@ -10,7 +10,7 @@ int8_t* my_itoa(int8_t* str, int32_t data, int32_t base)
 	uint8_t i = 0;
 	uint32_t u_data;
 
-	if(!str || base > 36 || base < 2) return NULL;
+	if(!str || base > 36 || base < 2) return 0;
 
 	if(data < 0 && base == 10)
 	{
@@ -92,7 +92,11 @@ void print_memory(uint8_t* start, uint32_t length)
 {
 	uint32_t i;
 	if(!start) return;
-
+#ifndef FRDM
 	for(i = 0; i < length; ++i)
 		printf("%x ", *(start + i));
+#endif
+
+
+
 }

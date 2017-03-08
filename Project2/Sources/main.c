@@ -27,12 +27,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+#include <stdint.h>
 #include "MKL25Z4.h"
 #include "uart.h"
 #include "circbuf.h"
 #include "defines.h"
-#include "log.h"
+//#include "log.h"
 #include "memory.h"
 #include "data.h"
 
@@ -40,7 +40,14 @@ static int i = 0;
 
 int main(void)
 {
+	//NVIC_EnableIRQ(UART0_IRQn);
 	uart_configure(br38400, 0);
+	//__enable_irq();
+	uint8_t data;
+	while(1){
+		uart_receive_byte(&data);
+		uart_send_byte(&data);
+	}
 
 }
 ////////////////////////////////////////////////////////////////////////////////

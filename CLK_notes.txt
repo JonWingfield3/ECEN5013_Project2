@@ -1,0 +1,24 @@
+CLOCK SYSTEM
+chapter 5 of TRM
+
+Core clk --> MCGOUTCLK divided by OUTDIV1, clock CM0+ core
+Platform clk --> MCGOUTCLK divided by OUTDIV1, clocks crossbar switch and NVIC
+System clk --> MCGOUTCLK/OUTDIV1, clocks bus masters
+Bus clk--> system clk/OUTDIV4, clocks bus slaves and peripherals
+Flash clk --> flash mem clk, same as bus clk
+
+MCGIRCLK --> MCG output of fast/slow int ref clk
+MCOUTCLK --> MCG output of either IRC, MCGFLLCLK, MCGPLLCLK, or MCG ext ref clk
+MCGFLLCLK --> MCG output of FLL, used for UART0, USBFS, TPM
+MCPLLCLK --> MCG output of PLL, used for UART0, USBFS, TPM
+OSCCLK --> sys osc output of int osc, used as MCG ext ref clk
+OSCERCLK --> sys osc output
+OSC32KCLK --> sys osc 32k output
+ERCLK32K
+LPO --> PMC 1kHz output
+
+Core,Platform, and Sys Clk frequencies <= 48M
+
+Clock to each module is individually gated using SIM SCGCx reg's
+
+UART0 interfaces to Bus Clock, internally has UART0 clk

@@ -5,14 +5,14 @@
  *      Author: jonathanwingfield
  */
 
+#ifndef SOURCES_LOG_H_
+#define SOURCES_LOG_H_
+
 #include "uart.h"
 #include "data.h"
 #include "memory.h"
 #include "circbuf.h"
 #include "defines.h"
-
-#ifndef SOURCES_LOG_H_
-#define SOURCES_LOG_H_
 
 typedef enum log_error_t {
 	SUCCESS_LOG,

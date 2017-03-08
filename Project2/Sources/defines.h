@@ -12,5 +12,4 @@
 #define SUCCESS (int8_t) 0
 
 
-
 #endif /* SOURCES_DEFINES_H_ */
