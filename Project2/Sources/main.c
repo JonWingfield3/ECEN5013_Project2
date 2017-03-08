@@ -31,8 +31,15 @@
 #include "MKL25Z4.h"
 #include "uart.h"
 #include "circbuf.h"
+#ifdef DEBUG
 #include "defines.h"
+#endif
+#ifndef B_LOGGER
 #include "log.h"
+#endif
+#ifdef B_LOGGER
+#include "binary_log.h"
+#endif
 #include "memory.h"
 #include "data.h"
 
@@ -42,7 +49,11 @@ static int i = 0;
 int main(void)
 {
 	//NVIC_EnableIRQ(UART0_IRQn);
+#ifdef FRDM
+#ifdef DEBUG
 	uart_configure(br115200);
+#endif
+#endif
 	//__enable_irq();
 	uint8_t i = 0;
 	while(1){
