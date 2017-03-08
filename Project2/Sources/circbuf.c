@@ -65,7 +65,7 @@ CircBufState BufferEmpty(CircBuf* CB){
 
 	if(!CB) return PTR_ERROR_BUF;
 	if(CB->count == 0) return BUFFER_EMPTY;
-	else return BUFF_NOT_EMPTY;
+	else return BUFFER_NOT_EMPTY;
 }
 
 CircBufState BufferPeek(CircBuf* CB, CircBufData_t* item_n, uint32_t n){

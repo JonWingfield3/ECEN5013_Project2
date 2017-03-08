@@ -20,6 +20,9 @@ int8_t __wrap_my_memzero(uint8_t* src, uint32_t length) {
 }
 
 int8_t __wrap_my_reverse(uint8_t* src, uint32_t length) {
-  src = (uint8_t *)mock();
+  int i;
+  for(i = 0; i < length; i++) {
+    src[i] = (uint8_t)mock();
+  }
   return (int8_t) mock();
 }
