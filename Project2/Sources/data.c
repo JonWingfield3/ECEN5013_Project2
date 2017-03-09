@@ -90,9 +90,9 @@ int8_t little_to_big32(uint32_t* data, uint32_t length)
 
 void print_memory(uint8_t* start, uint32_t length)
 {
-	uint32_t i;
 	if(!start) return;
 #ifndef FRDM
+	uint32_t i;
 	for(i = 0; i < length; ++i)
 		printf("%x ", *(start + i));
 #endif

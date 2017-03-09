@@ -6,7 +6,6 @@
 // local includes
 #include "memory.h"
 #include "defines.h"
-#define FRDM
 
 #ifndef FRDM
 #include <stdio.h>
