@@ -59,7 +59,7 @@ typedef enum CircBufState_E{
 CircBufState BufferInit(CircBuf* CB, uint32_t size);
 
 /******************************************************
-* CircBufState BufferAdd(CircBuf* CB, CircBuf_data_t item);
+* CircBufState BufferAdd(CircBuf* CB, CircBuf_data_t item)
 *	Description: This function is used to add parameter item
 *		into an initialized buffer pointed at by CB. This
 *		function will by default overwrite the oldest entry
@@ -82,7 +82,7 @@ CircBufState BufferInit(CircBuf* CB, uint32_t size);
 CircBufState BufferAdd(CircBuf* CB, CircBufData_t item);
 
 /******************************************************
-* CircBufState BufferRemove(CircBuf* CB);
+* CircBufState BufferRemove(CircBuf* CB)
 *	Description: This function is used to remove the oldest item
 *		previously inside of a CircBuf pointed at by CB. If successful
 *		the item parameter will point at the entry that has just
@@ -108,7 +108,7 @@ CircBufState BufferAdd(CircBuf* CB, CircBufData_t item);
 CircBufState BufferRemove(CircBuf* CB, CircBufData_t* item);
 
 /******************************************************
-* CircBufState BufferFull(CircBuf* CB);
+* CircBufState BufferFull(CircBuf* CB)
 *	Description: This function can be used to check if
 *		 a CircBuf is full.
 *	Parameters:
@@ -125,7 +125,7 @@ CircBufState BufferRemove(CircBuf* CB, CircBufData_t* item);
 CircBufState BufferFull(CircBuf* CB);
 
 /******************************************************
-* CircBufState BufferEmpty(CircBuf* CB);
+* CircBufState BufferEmpty(CircBuf* CB)
 *	Description: This function can be used to check if a
 *		CircBuf is empty.
 *	Parameters:
@@ -142,7 +142,7 @@ CircBufState BufferFull(CircBuf* CB);
 CircBufState BufferEmpty(CircBuf* CB);
 
 /******************************************************
-* CircBufState BufferPeek(CircBuf* CB, CircBufData_t* item_n, uint32_t n);
+* CircBufState BufferPeek(CircBuf* CB, CircBufData_t* item_n, uint32_t n)
 *	Description: This function is used to return the nth item
 *		inside of a CircBuf
 *	Parameters:
@@ -165,7 +165,7 @@ CircBufState BufferEmpty(CircBuf* CB);
 CircBufState BufferPeek(CircBuf* CB, CircBufData_t* item_n, uint32_t n);
 
 /******************************************************
-* CircBufState BufferDestroy(CircBuf* CB);
+* CircBufState BufferDestroy(CircBuf* CB)
 *	Description: This function destroys a CircBuf and returns
 *		its memory back the heap. To use this buffer again a call
 *		to BufferInitialize() must be made.
@@ -180,5 +180,18 @@ CircBufState BufferPeek(CircBuf* CB, CircBufData_t* item_n, uint32_t n);
 *		CircBuf. No work is done in this case.
 ******************************************************/
 CircBufState BufferDestroy(CircBuf* CB);
+
+/******************************************************
+* CircBufState BufferCount(CircBuf* CB)
+*	Description: This function returns the number of items in
+*		CircBuf
+*	Parameters:
+*		- CircBuf* CB: This should be a pointer to an initialized
+*		CircBuf.
+*	Possible Return Values:
+*		- <number of items in buffer>: Returns for valid initialized buffer
+*		- PTR_ERROR: CB is NULL
+******************************************************/
+uint32_t BufferCount(CircBuf* CB);
 
 #endif /* __CircBuf_H__ */

@@ -40,21 +40,18 @@ static int i = 0;
 
 int main(void)
 {
-	//NVIC_EnableIRQ(UART0_IRQn);
-	uart_configure(br115200);
-	//__enable_irq();
-	uint8_t data[5]; //= {0x80000000, 0, 100, 10010, 403040, 002, 255};
-uint8_t i = 0;
+	uint8_t data;
+	uart_configure(br57600);
+
+#ifdef INTERRUPTS
+	NVIC_EnableIRQ(UART0_IRQn);
+	__enable_irq();
+#endif
+
 	while(1){
-		//uart_receive_byte_n(data, 4);
-		//data[10] = '\0';
-		//my_itoa(data,255,10);
-		log_integer(255);
-		//if(i = (sizeof(data)/sizeof(*data)))
-			//while(1);
+		uart_receive_byte(&data);
+		uart_send_byte(&data);
 	}
 
 }
-////////////////////////////////////////////////////////////////////////////////
-// EOF
-////////////////////////////////////////////////////////////////////////////////
+

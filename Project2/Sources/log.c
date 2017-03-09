@@ -41,7 +41,7 @@ log_error log_integer(int32_t num){
 	log_string(my_str);
 #endif
 #ifndef FRDM
-	printf("%s", my_str);
+	printf("%d", num);
 #endif
 }
 
