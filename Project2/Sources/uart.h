@@ -11,6 +11,8 @@
 #include "defines.h"
 #include "uartbuf.h"
 
+extern uint32_t data_flag;
+
 typedef enum {
 	example
 }UART_RETURN;

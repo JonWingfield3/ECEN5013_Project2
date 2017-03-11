@@ -29,7 +29,7 @@
  */
 #include <stdint.h>
 #include "MKL25Z4.h"
-//#include "uart.h"
+#include "uart.h"
 #include "circbuf.h"
 #include "uartbuf.h"
 #ifdef DEBUG
@@ -40,27 +40,79 @@
 #endif
 #ifdef B_LOGGER
 #include "binary_log.h"
+uint32_t data_flag;
 #endif
 #include "memory.h"
 #include "data.h"
 
+extern CircBuf RXBuf;
+
 void main(void)
 {
-	uint8_t data;
+	uint8_t data = 0, count = 0;
 
-
-#ifdef FRDM
-#ifdef DEBUG
+	#ifdef FRDM
+	#ifdef DEBUG
+	#ifdef B_LOGGER
+	CircBuf BLB;
+	BinLogBufferInit(&BLB, DEFAULT_BINLOGBUF_SIZE);
+	// BinLogAdd(BL1, LOGGER_INITIALIZED);
+	// BinLogBufferAdd(&BLB, BL);
 	uart_configure();
-#ifdef INTERRUPTS
+	// BinLogAdd(BL1, GPIO_INITIALIZED);
+	// BinLogBufferAdd(&BLB, BL);
+	#ifdef INTERRUPTS
 	NVIC_EnableIRQ(UART0_IRQn);
 	__enable_irq();
-#endif
-#endif
-#endif
+	#endif
+	#endif
+	#endif
+	#endif
+	// BinLogAdd(BL1, SYSTEM_INITIALIZED);
+	// BinLogBufferAdd(&BLB, BL);
 
 	while(1){
+
+		#ifdef B_LOGGER
+		while(FLAG_IS_CLEAR(data_flag));
+		CLEAR_FLAG(data_flag);
+		uart_receive_byte(&data);
+		count++;
+		BinLog(&BLB, DATA_RECEIVED, &data, 1);
+		BinLog(&BLB, DATA_ANALYSIS_STARTED);
+
+		if(IS_ALPHA(data)){
+			//BinLog(&BLB, DATA_ALPHA_COUNT, 0, 0);
+
+		}
+		else if(IS_NUM(data)){
+			// BinLogAdd(BL1, DATA_NUMERIC_COUNT);
+			// BinLogBufferAdd(&BLB, BL);
+
+		}
+		else if(IS_PUNC(data)){
+			// BinLogAdd(BL1, DATA_PUNCTUATION_COUNT);
+			// BinLogBufferAdd(&BLB, BL);
+
+
+		}
+		else{
+			// BinLogAdd(BL1, DATA_MISC_COUNT);
+			// BinLogBufferAdd(&BLB, BL);
+		}
+	// BinLogAdd(BL1, DATA_ANALYSIS_COMPLETED);
+	// BinLogBufferAdd(&BLB, BL);
+
+		if(count == 16){
+			count = 0; // reset count
+			// logsend()
+
+		}
+
+		#endif
+		#ifndef B_LOGGER
 		uart_receive_byte(&data);
 		uart_send_byte(&data);
+		#endif
 	}
 }

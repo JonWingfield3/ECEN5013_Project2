@@ -424,7 +424,7 @@ static void test_buffer_full(void **state) {
   assert_int_equal(ret, SUCCESS_BUF);
 }
 
-// Tests that buferempty returns correctly based on buffer state
+// Tests that bufferempty returns correctly based on buffer state
 static void test_buffer_empty(void **state) {
   CircBuf buf;
   uint32_t size = 256;

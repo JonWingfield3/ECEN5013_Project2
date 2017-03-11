@@ -10,17 +10,18 @@
 #define ENABLE 1
 #define DISABLE 0
 
-static CircBuf TXBuf, RXBuf;
+CircBuf TXBuf, RXBuf;
 
 UART_RETURN uart_configure(void) {
 
-	SIM_SOPT2 |= SIM_SOPT2_UART0SRC(1);
 	SIM_SOPT2 |= SIM_SOPT2_PLLFLLSEL(0);
+	SIM_SOPT2 |= SIM_SOPT2_UART0SRC(1);
 	SIM_SCGC4 |= SIM_SCGC4_UART0_MASK;
-	SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK;
 
+	SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK;
 	PORTA_PCR1 = PORT_PCR_MUX(2);
 	PORTA_PCR2 = PORT_PCR_MUX(2);
+	//GPIO_INITIALIZED
 
 	UART0_C2  = 0x00;
 	UART0_C1  = 0x00;
@@ -107,6 +108,9 @@ extern void UART0_IRQHandler(void){
 		if(UARTBufferFull(&RXBuf) == BUFFER_NOT_FULL){
 			data = UART0_D;
 			UARTBufferAdd(&RXBuf, data);
+			#ifdef B_LOGGER
+			SET_FLAG(data_flag);
+			#endif
 		}
 	}
 

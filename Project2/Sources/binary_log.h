@@ -13,6 +13,19 @@
 #include "circbuf.h"
 #include "defines.h"
 
+
+// Macro functions obtained using ascii table.
+#define IS_ALPHA(X) ((X >= 'A' && X <= 'Z') || (X >= 'a' && X <= 'z'))
+
+#define IS_NUMERIC(X) (X >= '0' && X <= '9')
+
+#define IS_PUNCTUATION(X) ((X >= '!' && X <= ''\'') || \
+						   (X >= ':' && X <= '@') || \
+						   (X >= '[' && X <= '`') || \
+						   (X >= '{' && X <= '~'))
+
+#define IS_CTL(X) ((X >= 0 && X <= 0x20) || (X == 0x7F))
+
 typedef enum BinLogID_e{
 	LOGGER_INITIALIZED,
 	GPIO_INITIALIZED,
@@ -36,185 +49,204 @@ typedef struct BinLog_t{
 	uint8_t payload[MAX_BINLOG_PAYLOAD_SIZE];
 }BinLog;
 
+BinLogStatus BinLog(CircBuf* CB, BinLogID ID, uint8_t* payload, uint32_t length);
+
+
 /******************************************************
-* CircBufStatus BinLogBufferInit(CircBuf* BLB, uint32_t size)
+* CircBufStatus BinLogBufferInit(BinLogBuf* CB, uint32_t size)
 *	Description: This function is used to initialize
-*		a CircBuf. The buffer member is set to point
+*		a BinLogBuf. The buffer member is set to point
 *		at an  array of type BinLog* that can hold size
 *		elements. If the heap is full, function returns a
 *		HEAP_FULL error. The end result of a successful
-* 		call to this function is an empty CircBuf.
+* 		call to this function is an empty BinLogBuf.
 *	Parameters:
-*		- CircBuf* BLB: This parameter is a pointer to a
-*		CircBuf. Multiple calls to BufferInit() using
-*		the same BLB pointer should not be made without calls
+*		- BinLogBuf* CB: This parameter is a pointer to a
+*		BinLogBuf. Multiple calls to BufferInit() using
+*		the same CB pointer should not be made without calls
 *		to BufferDestroy() between them. The function will
-*		return a PTR_ERROR if BLB is NULL.
+*		return a PTR_ERROR if CB is NULL.
 *		- uint32_t size: This parameter is the number of elements
 *		in the buffer. The value 0 is not allowed and will cause
 *		the function to return an INIT_FAILURE error.
 *	Possible Return Values:
-*		- SUCCESS: BLB is a valid pointer, size is > 0, and
+*		- SUCCESS: CB is a valid pointer, size is > 0, and
 *		heap has enough space to allocate size*sizeof(BinLog*)
 *		bytes.
-*		- PTR_ERROR: BLB is invalid (NULL)
+*		- PTR_ERROR: CB is invalid (NULL)
 *		- INIT_FAILURE: size is equal to 0
 *		- HEAP_FULL: Unable to allocate size*sizeof(BinLog*)
 *		bytes from the heap.
 ******************************************************/
 CircBufStatus BinLogBufferInit(CircBuf* LB, uint32_t size);
 
-/******************************************************
-* CircBufStatus BinLogBufferAdd(CircBuf* BLB, CircBuf_data_t item)
-*	Description: This function is used to add parameter item
-*		into an initialized buffer pointed at by BLB. This
-*		function will by default overwrite the oldest entry
-*		if the CircBuf is full,
-*	Parameters:
-*		- CircBuf* BLB: This parameter should be a valid pointer
-*		to a CircBuf. After a successful call to this function
-*		the CircBuf pointed at by BLB will now contain a new item.
-*		- BinLog* item: This is the value to be added into
-*		the CircBuf.
-*	Possible Return Values:
-*		- SUCCESS: BLB is a valid pointer to a non-full initialized
-*		CircBuf, and the item was able to be added.
-*		- OVERWRITE: BLB is a valid pointer to a full and initialized
-*		CircBuf and the item has been added by overwriting the previous
-*		oldest entry.
-*		- PTR_ERROR: BLB is a non-valid pointer, or points to a non-initialized
-*		CircBuf. The item has not been added.
-******************************************************/
-CircBufStatus BinLogBufferAdd(CircBuf* BLB, BinLog* item);
 
 /******************************************************
-* CircBufStatus BinLogBufferRemove(CircBuf* BLB)
+* CircBufStatus BinLogBufferAdd(BinLogBuf* CB, BinLogBuf_data_t item)
+*	Description: This function is used to add parameter item
+*		into an initialized buffer pointed at by CB. This
+*		function will by default overwrite the oldest entry
+*		if the BinLogBuf is full,
+*	Parameters:
+*		- BinLogBuf* CB: This parameter should be a valid pointer
+*		to a BinLogBuf. After a successful call to this function
+*		the BinLogBuf pointed at by CB will now contain a new item.
+*		- BinLog* item: This is the value to be added into
+*		the BinLogBuf.
+*	Possible Return Values:
+*		- SUCCESS: CB is a valid pointer to a non-full initialized
+*		BinLogBuf, and the item was able to be added.
+*		- OVERWRITE: CB is a valid pointer to a full and initialized
+*		BinLogBuf and the item has been added by overwriting the previous
+*		oldest entry.
+*		- PTR_ERROR: CB is a non-valid pointer, or points to a non-initialized
+*		BinLogBuf. The item has not been added.
+******************************************************/
+CircBufStatus BinLogBufferAdd(CircBuf* CB, BinLog* item);
+
+
+/******************************************************
+* CircBufStatus BinLogBufferRemove(BinLogBuf* CB)
 *	Description: This function is used to remove the oldest item
-*		previously inside of a CircBuf pointed at by BLB. If successful
+*		previously inside of a BinLogBuf pointed at by CB. If successful
 *		the item parameter will point at the entry that has just
 *		been removed.
 *	Parameters:
-*		- CircBuf* BLB: This parameter should be a valid pointer
-*		to an initialized, non-empty CircBuf.
+*		- BinLogBuf* CB: This parameter should be a valid pointer
+*		to an initialized, non-empty BinLogBuf.
 *		- BinLog** item: This parameter should be a valid
 *		pointer which upon successful completion of the function
 *		will be pointing at a copy of the removed item. The NULL
 *		pointer may be passed in for item if the removed value is
 *		of no interest.
 *	Possible Return Values:
-*		- SUCCESS: BLB is a valid pointer to a non-empty initialized
-*		CircBuf, and the item was able to be removed after being copied
+*		- SUCCESS: CB is a valid pointer to a non-empty initialized
+*		BinLogBuf, and the item was able to be removed after being copied
 *		into the memory location pointed at by item.
-*		- ITEM_REMOVE_FAILURE: BLB points at an empty CircBuf. Nothing can
+*		- ITEM_REMOVE_FAILURE: CB points at an empty BinLogBuf. Nothing can
 *		be removed and the value of *item is the same as before.
-*		- PTR_ERROR: BLB is an invalid pointer or points to an
-*		uninitialized CircBuf. The function
+*		- PTR_ERROR: CB is an invalid pointer or points to an
+*		uninitialized BinLogBuf. The function
 *		will return without having done any work.
 ******************************************************/
-CircBufStatus BinLogBufferRemove(CircBuf* BLB, BinLog** item);
+CircBufStatus BinLogBufferRemove(CircBuf* CB, BinLog** item);
+
 
 /******************************************************
-* CircBufStatus BinLogBufferFull(CircBuf* BLB)
+* CircBufStatus BinLogBufferFull(BinLogBuf* CB)
 *	Description: This function can be used to check if
-*		 a CircBuf is full.
+*		 a BinLogBuf is full.
 *	Parameters:
-*		CircBuf* BLB: This parameter should be a valid pointer
-*		to an initialized CircBuf
+*		BinLogBuf* CB: This parameter should be a valid pointer
+*		to an initialized BinLogBuf
 *	Possible Return Values:
-*		- BUFFER_FULL: BLB is a valid pointer to an initialized
-*		and full CircBuf.
-*		- BUFFER_NOT_FULL: BLB is a valid pointer to an
-*		initialized an non-full CircBuf
-*		- PTR_ERROR: BLB is an invalid pointer, or points
-*		to an uninitialized CircBuf
+*		- BUFFER_FULL: CB is a valid pointer to an initialized
+*		and full BinLogBuf.
+*		- BUFFER_NOT_FULL: CB is a valid pointer to an
+*		initialized an non-full BinLogBuf
+*		- PTR_ERROR: CB is an invalid pointer, or points
+*		to an uninitialized BinLogBuf
 ******************************************************/
-CircBufStatus BinLogBufferFull(CircBuf* BLB);
+CircBufStatus BinLogBufferFull(CircBuf* CB);
+
 
 /******************************************************
-* CircBufStatus BinLogBufferEmpty(CircBuf* BLB)
+* CircBufStatus BinLogBufferEmpty(BinLogBuf* CB)
 *	Description: This function can be used to check if a
-*		CircBuf is empty.
+*		BinLogBuf is empty.
 *	Parameters:
-*		- CircBuf* BLB: This parameter should be a valid pointer
-*		to an initialized CircBuf
+*		- BinLogBuf* CB: This parameter should be a valid pointer
+*		to an initialized BinLogBuf
 *	Possible Return Values:
-*		- BUFFER_EMPTY: BLB is a valid pointer to an initialized
-*		and empty CircBuf
-*		- BUFFER_NOT_EMPTY: BLB is a valid pointer to an
-*		initialized and non-empty CircBuf
-		_ PTR_ERROR: BLB is an invalid pointer or points at an
-*		uninitialized CircBuf.
+*		- BUFFER_EMPTY: CB is a valid pointer to an initialized
+*		and empty BinLogBuf
+*		- BUFFER_NOT_EMPTY: CB is a valid pointer to an
+*		initialized and non-empty BinLogBuf
+		_ PTR_ERROR: CB is an invalid pointer or points at an
+*		uninitialized BinLogBuf.
 ******************************************************/
-CircBufStatus BinLogBufferEmpty(CircBuf* BLB);
+CircBufStatus BinLogBufferEmpty(CircBuf* CB);
+
 
 /******************************************************
-* CircBufStatus BufferPeek(CircBuf* BLB, BinLog** item_n, uint32_t n)
+* CircBufStatus BufferPeek(BinLogBuf* CB, BinLog** item_n, uint32_t n)
 *	Description: This function is used to return the nth item
-*		inside of a CircBuf
+*		inside of a BinLogBuf
 *	Parameters:
-*		- CircBuf* BLB: This parameter should be a valid pointer
-*		to an initialized CircBuf containing at least n items.
+*		- BinLogBuf* CB: This parameter should be a valid pointer
+*		to an initialized BinLogBuf containing at least n items.
 *		- BinLog** item_n: This parameter should be a valid
 *		pointer that upon successful completion of the function call
-*		will point at the nth item in the CircBuf.
+*		will point at the nth item in the BinLogBuf.
 *		- uint32_t n: This parameter indicates which item should be peeked at.
 *		n is one-based, so n = 1 returns the first value in the buffer.
 *	Possible Return Values:
-*		- SUCCESS: BLB is a valid pointer to an initialized CircBuf with at least
+*		- SUCCESS: CB is a valid pointer to an initialized BinLogBuf with at least
 *		n items inside of it. item_n will point at a copy of the nth item in the
-*		CircBuf.
-*		- INVALID_PEEK: BLB is a valid pointer to an initialized CircBuf which contains
+*		BinLogBuf.
+*		- INVALID_PEEK: CB is a valid pointer to an initialized BinLogBuf which contains
 *		less than n items or n < 1.
-*		- PTR_ERROR: BLB is invalid or points at an uninitialized CircBuf or item_n
+*		- PTR_ERROR: CB is invalid or points at an uninitialized BinLogBuf or item_n
 *		is an invalid pointer.
 ******************************************************/
-CircBufStatus BinLogBufferPeek(CircBuf* BLB, BinLog** item_n, uint32_t n);
+CircBufStatus BinLogBufferPeek(CircBuf* CB, BinLog** item_n, uint32_t n);
+
 
 /******************************************************
-* CircBufStatus BinLogBufferDestroy(CircBuf* BLB)
-*	Description: This function destroys a CircBuf and returns
+* CircBufStatus BinLogBufferDestroy(BinLogBuf* CB)
+*	Description: This function destroys a BinLogBuf and returns
 *		its memory back the heap. To use this buffer again a call
 *		to BufferInitialize() must be made.
 *	Parameters:
-*		- CircBuf* BLB: This should be a pointer to an initialized
-*		CircBuf.
+*		- BinLogBuf* CB: This should be a pointer to an initialized
+*		BinLogBuf.
 *	Possible Return Values:
-*		- SUCCESS: The previously valid CircBuf pointed at by BLB
+*		- SUCCESS: The previously valid BinLogBuf pointed at by CB
 *		has been destroyed, and its dynamic memory has been returned
 *		for later use,
-*		- PTR_ERROR: BLB is an invalid pointer or points at an uninitialized
-*		CircBuf. No work is done in this case.
+*		- PTR_ERROR: CB is an invalid pointer or points at an uninitialized
+*		BinLogBuf. No work is done in this case.
 ******************************************************/
-CircBufStatus BinLogBufferDestroy(CircBuf* BLB);
+CircBufStatus BinLogBufferDestroy(CircBuf* CB);
+
 
 /******************************************************
-* CircBufStatus BinLogBufferCount(CircBuf* BLB)
+* CircBufStatus BinLogBufferCount(BinLogBuf* CB)
 *	Description: This function returns the number of items in
-*		CircBuf
+*		BinLogBuf
 *	Parameters:
-*		- CircBuf* BLB: This should be a pointer to an initialized
-*		CircBuf.
+*		- BinLogBuf* CB: This should be a pointer to an initialized
+*		BinLogBuf.
 *	Possible Return Values:
 *		- <number of items in buffer>: Returns for valid initialized buffer
-*		- PTR_ERROR: BLB is NULL
+*		- PTR_ERROR: CB is NULL
 ******************************************************/
-uint32_t BinLogBufferCount(CircBuf* BLB);
+uint32_t BinLogBufferCount(CircBuf* CB);
 
-CircBufStatus LogInit(BinLog* BL);
-// initialize BLP to empty BinLog
+/******************************************************
+ * BinLog* BinLogCreate(BinLogID ID, uint8_t* payload)
+ *	Description:
+ *
+ *	Parameters:
+ *
+ *	Possible Return Values:
+ *
+ *
+******************************************************/
+BinLogStatus BinLogCreate(BinLog* BL , BinLogID ID, uint8_t* payload, uint32_t length);
 
-CircBufStatus LogItem(BinLog* BL, BinLogID event);
-// adds item to BinLog
 
-CircBufStatus LogClear(BinLog* BL);
-// empties BinLog
-
-CircBufStatus LogSend(BinLog* BL);
-// sends contents of BinLog
-
-uint32_t LogPayloadSize(BinLog* BL);
-// returns size of payload of  BinLog
-
+/******************************************************
+ * CircBufStatus LogInit(BinLog* BL)
+ *	Description:
+ *
+ *	Parameters:
+ *
+ *	Possible Return Values:
+ *
+ *
+******************************************************/
+BinLogStatus LogSend(BinLog* BL);
 
 
 #endif /* SOURCES_BINARY_LOG_H_ */

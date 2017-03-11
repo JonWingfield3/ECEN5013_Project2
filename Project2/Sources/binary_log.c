@@ -96,4 +96,20 @@ CircBufStatus BinLogBufferDestroy(CircBuf* CB){
 	return SUCCESS_BUF;
 }
 
+BinLogStatus BinLogCreate(BinLog* BL , BinLogID ID, uint8_t* payload, uint32_t length){
+
+	BinLog* BL = (BinLog*) malloc(sizeof(BinLog));
+	BL->ID = ID;
+	BL->length = length;
+	my_memmove(payload, BL->payload, length);
+	return 0;
+}
+
+BinLogStatus BinLog(CircBuf* CB, BinLogID ID, uint8_t* payload, uint32_t length){
+
+	BinLog* BL;
+	BinLogCreate(BL, ID, payload, length);
+	BinLogBufferAdd(CB, BL);
+	return 0;
+}
 
