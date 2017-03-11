@@ -21,8 +21,7 @@ CircBufStatus UARTBufferAdd(CircBuf* CB, uint8_t item){
 	if(CB->count == CB->length) return OVERWRITE;
 
 	if(CB->count > 0)
-		CB->head = ((uint8_t*)CB->head < (uint8_t*)CB->buffer + CB->length - 1 ?
-				((uint8_t*)CB->head) + 1 : CB->buffer);
+		CB->head = ((uint8_t*)CB->head < (uint8_t*)CB->buffer + CB->length - 1 ? ((uint8_t*)CB->head) + 1 : CB->buffer);
 
 	*temp_ptr = item;
 	(CB->count)++;
@@ -44,8 +43,7 @@ CircBufStatus UARTBufferRemove(CircBuf* CB, uint8_t* item){
 		return SUCCESS_BUF;
 	}
 	if(item) *item = *((uint8_t*)CB->tail);
-	CB->tail = (((uint8_t*)CB->tail) < ((uint8_t*)CB->buffer) + CB->length - 1 ?
-			((uint8_t*)CB->tail) + 1 : CB->buffer);
+	CB->tail = (((uint8_t*)CB->tail) < ((uint8_t*)CB->buffer) + CB->length - 1 ? ((uint8_t*)CB->tail) + 1 : CB->buffer);
 	(CB->count)--;
 	return SUCCESS_BUF;
 }

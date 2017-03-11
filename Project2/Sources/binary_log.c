@@ -28,8 +28,7 @@ CircBufStatus BinLogBufferAdd(CircBuf* CB, BinLog* item){
 	if(CB->count == CB->length) return OVERWRITE;
 
 	if(CB->count > 0)
-		CB->head = ((BinLog**)CB->head < (BinLog**)CB->buffer + CB->length - 1 ?
-				((BinLog**)CB->head) + 1 : CB->buffer);
+		CB->head = ((BinLog**)CB->head < (BinLog**)CB->buffer + CB->length - 1 ? ((BinLog**)CB->head) + 1 : CB->buffer);
 
 	*temp_ptr = item;
 	(CB->count)++;
