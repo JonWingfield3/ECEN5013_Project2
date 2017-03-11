@@ -29,8 +29,9 @@
  */
 #include <stdint.h>
 #include "MKL25Z4.h"
-#include "uart.h"
+//#include "uart.h"
 #include "circbuf.h"
+#include "uartbuf.h"
 #ifdef DEBUG
 #include "defines.h"
 #endif
@@ -43,31 +44,23 @@
 #include "memory.h"
 #include "data.h"
 
-extern CircBuf TXBuf, RXBuf;
-static int i = 0;
-
-int main(void)
+void main(void)
 {
 	uint8_t data;
-	uart_configure(br57600);
 
+
+#ifdef FRDM
+#ifdef DEBUG
+	uart_configure();
 #ifdef INTERRUPTS
 	NVIC_EnableIRQ(UART0_IRQn);
 	__enable_irq();
 #endif
+#endif
+#endif
 
-	//NVIC_EnableIRQ(UART0_IRQn);
-#ifdef FRDM
-#ifdef DEBUG
-	uart_configure(br115200);
-#endif
-#endif
-	//__enable_irq();
-	uint8_t i = 0;
 	while(1){
 		uart_receive_byte(&data);
 		uart_send_byte(&data);
 	}
-
 }
-

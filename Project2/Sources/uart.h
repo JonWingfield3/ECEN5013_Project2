@@ -15,16 +15,9 @@ typedef enum {
 	example
 }UART_RETURN;
 
-typedef enum {
-	br9600 = 9600,
-	br19200 = 19200,
-	br38400 = 38400,
-	br57600 = 57600,
-	br115200 = 115200
-}STD_BAUD;
 
 /***************************************************************
- * UART_RETURN uart_configure(STD_BAUD br, uint8_t channel)
+ * UART_RETURN uart_configure(void)
  *	Description:
  *
  *	Parameters:
@@ -32,7 +25,7 @@ typedef enum {
  *	Possible Return Values:
  *
  **************************************************************/
-UART_RETURN uart_configure(STD_BAUD br);
+UART_RETURN uart_configure(void);
 
 /***************************************************************
  * UART_RETURN uart_send_byte(uint8_t* data)
