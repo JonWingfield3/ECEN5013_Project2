@@ -9,7 +9,7 @@
 
 #include "MKL25Z4.h"
 #include "defines.h"
-#include "circbuf.h"
+#include "uartbuf.h"
 
 typedef enum {
 	example

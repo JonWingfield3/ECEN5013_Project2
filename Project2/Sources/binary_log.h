@@ -11,8 +11,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "circbuf.h"
-
-#define MAX_BINLOG_PAYLOAD_SIZE 8
+#include "defines.h"
 
 typedef enum BinLogID_e{
 	LOGGER_INITIALIZED,

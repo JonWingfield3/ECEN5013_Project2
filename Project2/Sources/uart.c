@@ -7,7 +7,6 @@
 
 #include "uart.h"
 
-
 #define ENABLE 1
 #define DISABLE 0
 
@@ -31,8 +30,8 @@ UART_RETURN uart_configure(void) {
 	UART0_BDL = 0x16;
 
 #ifdef INTERRUPTS
-	UARTBufferInit(&TXBuf, DEFAULT_BUF_SIZE);
-	UARTBufferInit(&RXBuf, DEFAULT_BUF_SIZE);
+	UARTBufferInit(&TXBuf, DEFAULT_UARTBUF_SIZE);
+	UARTBufferInit(&RXBuf, DEFAULT_UARTBUF_SIZE);
 	UART0_C2 = UART0_C2_RIE_MASK;
 
 #endif
@@ -75,7 +74,7 @@ UART_RETURN uart_receive_byte(uint8_t* buffer) {
 
 #ifdef INTERRUPTS
 	while(UARTBufferEmpty(&RXBuf) == BUFFER_EMPTY);
-	UARTBufferRemove(&RXBuf, (CircBufData_t*)buffer);
+	UARTBufferRemove(&RXBuf, buffer);
 #endif
 #ifndef INTERRUPTS
 	while(!(UART0_S1 & UART_S1_RDRF_MASK)); // wait for receive buffer to be full

@@ -12,6 +12,8 @@
 #define SUCCESS (int8_t) 0
 
 #define INTERRUPTS
-#define DEFAULT_BUF_SIZE 256
+#define DEFAULT_UARTBUF_SIZE 256
+#define MAX_BINLOG_PAYLOAD_SIZE 8
+
 
 #endif /* SOURCES_DEFINES_H_ */

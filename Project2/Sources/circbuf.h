@@ -13,7 +13,7 @@
 
 typedef uint32_t CircBufData_t;
 
-typedef struct CircBuf_S{
+typedef struct CircBuf_t{
 	void* buffer;
 	void* head;
 	void* tail;
