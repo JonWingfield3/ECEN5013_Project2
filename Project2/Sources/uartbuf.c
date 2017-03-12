@@ -15,7 +15,7 @@ CircBufStatus UARTBufferInit(CircBuf* CB, uint32_t size){
 
 CircBufStatus UARTBufferAdd(CircBuf* CB, uint8_t item){
 
-	uint8_t* temp_ptr = (uint8_t*)CB->head;
+	uint8_t* temp_ptr;
 
 	if(!CB || !(CB->buffer)) return PTR_ERROR_BUF;
 	if(CB->count == CB->length) return OVERWRITE;
@@ -23,6 +23,7 @@ CircBufStatus UARTBufferAdd(CircBuf* CB, uint8_t item){
 	if(CB->count > 0)
 		CB->head = ((uint8_t*)CB->head < (uint8_t*)CB->buffer + CB->length - 1 ? ((uint8_t*)CB->head) + 1 : CB->buffer);
 
+	temp_ptr = (uint8_t*)CB->head;
 	*temp_ptr = item;
 	(CB->count)++;
 	return SUCCESS_BUF;
@@ -42,6 +43,7 @@ CircBufStatus UARTBufferRemove(CircBuf* CB, uint8_t* item){
 		CB->count = 0;
 		return SUCCESS_BUF;
 	}
+
 	if(item) *item = *((uint8_t*)CB->tail);
 	CB->tail = (((uint8_t*)CB->tail) < ((uint8_t*)CB->buffer) + CB->length - 1 ? ((uint8_t*)CB->tail) + 1 : CB->buffer);
 	(CB->count)--;
@@ -72,7 +74,7 @@ CircBufStatus UARTBufferPeek(CircBuf* CB, uint8_t* item_n, uint32_t n){
 	if(!CB || !item_n || !(CB->buffer)) return PTR_ERROR_BUF;
 	if(n > CB->count || n < 1) return INVALID_PEEK;
 	*item_n = (((uint8_t*)CB->tail) + n - 1 > ((uint8_t*)CB->buffer) + (CB->length - 1) ?
-			*((uint8_t*)(CB->tail - CB->length + n - 1)) : *((uint8_t*)(CB->tail + n - 1)));
+			*((uint8_t*)(CB->tail - CB->length + n - 1)) : *(((uint8_t*)CB->tail) + n - 1));
 	return SUCCESS_BUF;
 }
 

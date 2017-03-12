@@ -12,17 +12,16 @@
 #include <stdint.h>
 #include "circbuf.h"
 #include "defines.h"
-
+#include "memory.h"
+#include "uart.h"
+#include "uartbuf.h"
 
 // Macro functions obtained using ascii table.
 #define IS_ALPHA(X) ((X >= 'A' && X <= 'Z') || (X >= 'a' && X <= 'z'))
 
 #define IS_NUMERIC(X) (X >= '0' && X <= '9')
 
-#define IS_PUNCTUATION(X) ((X >= '!' && X <= ''\'') || \
-						   (X >= ':' && X <= '@') || \
-						   (X >= '[' && X <= '`') || \
-						   (X >= '{' && X <= '~'))
+#define IS_PUNCTUATION(X) ((X >= '!' && X <= 0x47) || (X >= ':' && X <= '@') || (X >= '[' && X <= '`') || (X >= '{' && X <= '~'))
 
 #define IS_CTL(X) ((X >= 0 && X <= 0x20) || (X == 0x7F))
 
@@ -38,10 +37,14 @@ typedef enum BinLogID_e{
 	DATA_ANALYSIS_STARTED,
 	DATA_ALPHA_COUNT,
 	DATA_NUMERIC_COUNT,
-	DATA_PUNCUATION_COUNT,
+	DATA_PUNCTUATION_COUNT,
 	DATA_MISC_COUNT,
 	DATA_ANALYSIS_COMPLETED
 }BinLogID;
+
+typedef enum BinLogStatus_e{
+	exampleBinLog
+}BinLogStatus;
 
 typedef struct BinLog_t{
 	BinLogID ID; // identifies packet 2^32 possible values
@@ -49,7 +52,11 @@ typedef struct BinLog_t{
 	uint8_t payload[MAX_BINLOG_PAYLOAD_SIZE];
 }BinLog;
 
-BinLogStatus BinLog(CircBuf* CB, BinLogID ID, uint8_t* payload, uint32_t length);
+BinLogStatus BinLogEvent(CircBuf* CB, BinLogID ID, uint8_t* payload, uint32_t length);
+
+BinLogStatus BinLogChar(CircBuf* CB, BinLogID ID, uint8_t character);
+
+BinLogStatus BinLogSendData(CircBuf* CB, BinLogID ID);
 
 
 /******************************************************
@@ -233,7 +240,7 @@ uint32_t BinLogBufferCount(CircBuf* CB);
  *
  *
 ******************************************************/
-BinLogStatus BinLogCreate(BinLog* BL , BinLogID ID, uint8_t* payload, uint32_t length);
+BinLogStatus BinLogCreate(BinLog** BL , BinLogID ID, uint8_t* payload, uint32_t length);
 
 
 /******************************************************

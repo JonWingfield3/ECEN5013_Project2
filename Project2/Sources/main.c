@@ -35,9 +35,9 @@
 #ifdef DEBUG
 #include "defines.h"
 #endif
-#ifndef B_LOGGER
+//#ifndef B_LOGGER
 #include "log.h"
-#endif
+//#endif
 #ifdef B_LOGGER
 #include "binary_log.h"
 uint32_t data_flag;
@@ -56,11 +56,9 @@ void main(void)
 	#ifdef B_LOGGER
 	CircBuf BLB;
 	BinLogBufferInit(&BLB, DEFAULT_BINLOGBUF_SIZE);
-	// BinLogAdd(BL1, LOGGER_INITIALIZED);
-	// BinLogBufferAdd(&BLB, BL);
+	BinLogEvent(&BLB, LOGGER_INITIALIZED, 0, 0);
 	uart_configure();
-	// BinLogAdd(BL1, GPIO_INITIALIZED);
-	// BinLogBufferAdd(&BLB, BL);
+	BinLogEvent(&BLB,GPIO_INITIALIZED, 0, 0);
 	#ifdef INTERRUPTS
 	NVIC_EnableIRQ(UART0_IRQn);
 	__enable_irq();
@@ -68,8 +66,7 @@ void main(void)
 	#endif
 	#endif
 	#endif
-	// BinLogAdd(BL1, SYSTEM_INITIALIZED);
-	// BinLogBufferAdd(&BLB, BL);
+	BinLogEvent(&BLB, SYSTEM_INITIALIZED, 0, 0);
 
 	while(1){
 
@@ -78,35 +75,30 @@ void main(void)
 		CLEAR_FLAG(data_flag);
 		uart_receive_byte(&data);
 		count++;
-		BinLog(&BLB, DATA_RECEIVED, &data, 1);
-		BinLog(&BLB, DATA_ANALYSIS_STARTED);
 
-		if(IS_ALPHA(data)){
-			//BinLog(&BLB, DATA_ALPHA_COUNT, 0, 0);
+		BinLogEvent(&BLB, DATA_RECEIVED, &data, 1);
+		BinLogEvent(&BLB, DATA_ANALYSIS_STARTED, 0 , 0);
 
-		}
-		else if(IS_NUM(data)){
-			// BinLogAdd(BL1, DATA_NUMERIC_COUNT);
-			// BinLogBufferAdd(&BLB, BL);
+		if(IS_ALPHA(data)) BinLogChar(&BLB, DATA_ALPHA_COUNT, data);
 
-		}
-		else if(IS_PUNC(data)){
-			// BinLogAdd(BL1, DATA_PUNCTUATION_COUNT);
-			// BinLogBufferAdd(&BLB, BL);
+		else if(IS_NUMERIC(data)) BinLogChar(&BLB, DATA_NUMERIC_COUNT, data);
 
+		else if(IS_PUNCTUATION(data)) BinLogChar(&BLB, DATA_PUNCTUATION_COUNT, data);
 
-		}
-		else{
-			// BinLogAdd(BL1, DATA_MISC_COUNT);
-			// BinLogBufferAdd(&BLB, BL);
-		}
-	// BinLogAdd(BL1, DATA_ANALYSIS_COMPLETED);
-	// BinLogBufferAdd(&BLB, BL);
+		else BinLogChar(&BLB, DATA_MISC_COUNT, data);
 
-		if(count == 16){
-			count = 0; // reset count
-			// logsend()
+		BinLogEvent(&BLB, DATA_ANALYSIS_COMPLETED, 0, 0);
 
+		if(count == 5){
+			count = 0;
+			log_string("\nAlphabetic Characters Received: ");
+			BinLogSendData(&BLB, DATA_ALPHA_COUNT);
+			log_string("\nPunctuation Characters Received: ");
+			BinLogSendData(&BLB, DATA_PUNCTUATION_COUNT);
+			log_string("\nNumeric Characters Received: ");
+			BinLogSendData(&BLB, DATA_NUMERIC_COUNT);
+			log_string("\nMisc Characters Received: ");
+			BinLogSendData(&BLB, DATA_MISC_COUNT);
 		}
 
 		#endif
