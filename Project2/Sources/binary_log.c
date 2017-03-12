@@ -88,8 +88,19 @@ CircBufStatus BinLogBufferPeek(CircBuf* CB, BinLog** item_n, uint32_t n){
 	return SUCCESS_BUF;
 }
 
+CircBufStatus BinLogBufferClear(CircBuf* CB){
+
+	uint32_t i;
+	if(!CB || !(CB->buffer)) return PTR_ERROR_BUF;
+	for(i = 0; i < CB->length; ++i)
+		BinLogBufferRemove(CB, NULL);
+	return SUCCESS_BUF;
+}
+
+
 CircBufStatus BinLogBufferDestroy(CircBuf* CB){
-uint8_t i;
+
+	uint32_t i;
 	if(!CB || !(CB->buffer)) return PTR_ERROR_BUF;
 	for(i = 0; i < CB->length; ++i)
 		BinLogBufferRemove(CB, NULL);
@@ -148,14 +159,23 @@ BinLogStatus BinLogSendData(CircBuf* CB, BinLogID ID){
 	while(i <= CB->count){
 		BinLogBufferPeek(CB, &BL, i);
 		if(BL->ID == ID){
-			uart_send_byte_n(BL->payload, BL->size);
-			break;
+			log_string("\nNumber of characters: ");
+			log_integer(BL->size);
+			if(ID != DATA_MISC_COUNT) {
+				log_string("\nCharacters received: ");
+				uart_send_byte_n(BL->payload, BL->size);
+			}
+			free(BL);
+			return 0;
 		}
 		else{
 			++i;
 		}
 	}
+	log_string("\nNumber of characters: 0");
+	log_string("\nCharacters received: none");
 	free(BL);
+	return 0;
 }
 
 

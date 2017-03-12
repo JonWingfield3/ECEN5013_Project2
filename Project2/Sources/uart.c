@@ -44,7 +44,8 @@ UART_RETURN uart_configure(void) {
 UART_RETURN uart_send_byte(uint8_t* data) {
 
 #ifdef INTERRUPTS
-	UARTBufferAdd(&TXBuf, ((CircBufData_t)*data));
+	while(UARTBufferFull(&TXBuf) == BUFFER_FULL);
+	UARTBufferAdd(&TXBuf, *data);
 	UART0_C2 |= UART0_C2_TIE_MASK;
 #endif
 #ifndef INTERRUPTS

@@ -45,28 +45,26 @@ uint32_t data_flag;
 #include "memory.h"
 #include "data.h"
 
-extern CircBuf RXBuf;
-
 void main(void)
 {
-	uint8_t data = 0, count = 0;
+	//uint8_t data = 0, count = 0;
 
 	#ifdef FRDM
 	#ifdef DEBUG
+	uart_configure();
 	#ifdef B_LOGGER
 	CircBuf BLB;
 	BinLogBufferInit(&BLB, DEFAULT_BINLOGBUF_SIZE);
 	BinLogEvent(&BLB, LOGGER_INITIALIZED, 0, 0);
-	uart_configure();
 	BinLogEvent(&BLB,GPIO_INITIALIZED, 0, 0);
 	#ifdef INTERRUPTS
 	NVIC_EnableIRQ(UART0_IRQn);
 	__enable_irq();
 	#endif
-	#endif
-	#endif
-	#endif
 	BinLogEvent(&BLB, SYSTEM_INITIALIZED, 0, 0);
+	#endif
+	#endif
+	#endif
 
 	while(1){
 
@@ -89,22 +87,39 @@ void main(void)
 
 		BinLogEvent(&BLB, DATA_ANALYSIS_COMPLETED, 0, 0);
 
-		if(count == 5){
+		if(count == 16){
 			count = 0;
-			log_string("\nAlphabetic Characters Received: ");
+
+			log_string("Alphabetic Characters\n");
 			BinLogSendData(&BLB, DATA_ALPHA_COUNT);
-			log_string("\nPunctuation Characters Received: ");
+			log_string("\n\nPunctuation Characters\n");
 			BinLogSendData(&BLB, DATA_PUNCTUATION_COUNT);
-			log_string("\nNumeric Characters Received: ");
+			log_string("\n\nNumeric Characters\n");
 			BinLogSendData(&BLB, DATA_NUMERIC_COUNT);
-			log_string("\nMisc Characters Received: ");
+			log_string("\n\nMisc Characters\n");
 			BinLogSendData(&BLB, DATA_MISC_COUNT);
+			BinLogBufferClear(&BLB);
 		}
 
 		#endif
 		#ifndef B_LOGGER
-		uart_receive_byte(&data);
-		uart_send_byte(&data);
+		/*uart_receive_byte(&data);
+		uart_send_byte(&data);*/
+		uint8_t data[] = {'a','b','c','\0'};
+		        log_string(data);
+		        //log_flush();
+		        uint8_t i;
+		        for(i = 0; i < 4; i++) {
+		            *(data + i) = i + 65;
+		        }
+		        log_data(data, 4);
+		      //  log_flush();
+		        int32_t ui;
+		        for(ui = -10; ui < 11; ui++) {
+		            log_integer(ui);
+		        }
+		       // log_flush();
 		#endif
+		        while(1);
 	}
 }

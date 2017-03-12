@@ -11,8 +11,8 @@
 #define PTR_ERROR (int8_t) -1
 #define SUCCESS (int8_t) 0
 
-#define INTERRUPTS
-#define DEFAULT_UARTBUF_SIZE 128
+//#define INTERRUPTS
+#define DEFAULT_UARTBUF_SIZE 256
 #define DEFAULT_BINLOGBUF_SIZE 128
 
 #define SET_FLAG(FLAG)      FLAG = 1
@@ -22,7 +22,7 @@
 
 #define MAX_BINLOG_PAYLOAD_SIZE 16
 
-#define B_LOGGER
+//#define B_LOGGER
 
 #define heartbeat_configure() 	do{ \
 									SIM_SCGC5 |= SIM_SCGC5_PORTB_MASK; \

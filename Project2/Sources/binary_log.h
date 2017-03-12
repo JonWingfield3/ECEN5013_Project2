@@ -15,6 +15,7 @@
 #include "memory.h"
 #include "uart.h"
 #include "uartbuf.h"
+#include "log.h"
 
 // Macro functions obtained using ascii table.
 #define IS_ALPHA(X) ((X >= 'A' && X <= 'Z') || (X >= 'a' && X <= 'z'))
@@ -52,9 +53,15 @@ typedef struct BinLog_t{
 	uint8_t payload[MAX_BINLOG_PAYLOAD_SIZE];
 }BinLog;
 
+
+
 BinLogStatus BinLogEvent(CircBuf* CB, BinLogID ID, uint8_t* payload, uint32_t length);
 
+
+
 BinLogStatus BinLogChar(CircBuf* CB, BinLogID ID, uint8_t character);
+
+
 
 BinLogStatus BinLogSendData(CircBuf* CB, BinLogID ID);
 
