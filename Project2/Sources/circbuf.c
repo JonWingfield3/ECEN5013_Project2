@@ -22,9 +22,10 @@ CircBufStatus BufferInit(CircBuf* CB, uint32_t size){
 
 CircBufStatus BufferAdd(CircBuf* CB, CircBufData_t item){
 
+	if(!CB || !(CB->buffer)) return PTR_ERROR_BUF;
+
 	CircBufData_t* temp_ptr = (CircBufData_t*)CB->head;
 
-	if(!CB || !(CB->buffer)) return PTR_ERROR_BUF;
 	if(CB->count == CB->length) return OVERWRITE;
 
 	if(CB->count > 0)
