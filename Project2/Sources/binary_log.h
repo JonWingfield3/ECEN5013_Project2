@@ -44,25 +44,103 @@ typedef enum BinLogID_e{
 }BinLogID;
 
 typedef enum BinLogStatus_e{
-	exampleBinLog
+	BINLOG_SUCCESS,
+	BINLOG_HEAP_FULL,
+	BINLOG_PTR_ERROR,
+	BINLOGBUF_FULL,
+	BINLOGCHAR_EVENT_CREATED,
+	BINLOGCHAR_NO_EVENT_CREATED,
+	BINLOG_CHARS_FOUND,
+	BINLOG_NO_CHARS_FOUND
 }BinLogStatus;
 
 typedef struct BinLog_t{
-	BinLogID ID; // identifies packet 2^32 possible values
-	uint32_t size; // size of payload
+	BinLogID ID;
+	uint32_t size;
 	uint8_t payload[MAX_BINLOG_PAYLOAD_SIZE];
 }BinLog;
 
 
-
+/******************************************************
+* BinLogStatus BinLogEvent(CircBuf* CB, BinLogID ID, uint8_t* payload, uint32_t length)
+*	Description: This function is used to create a BinLog item and initialize it
+*		it with an ID and payload given by the function's parameters. The newly created
+*		BinLog item is then added into the CircBuf pointed at by CB.
+*	Parameters:
+*		- CircBuf* CB: This parameter should be a pointer to an initialized
+*			CircBuf.
+*		- BinLogID ID: This parameter is used to indicate the ID of the
+*			BinLog that is to be created.
+*		- uint8_t* payload: This parameter is a pointer to the payload
+*			that is to be copied into the newly created BinLog. The value 0
+*			be passed
+*		- uint32_t length: This parameter specifies the number of bytes pointed
+*			at by payload
+*	Possible Return Values:
+*		- BINLOG_SUCCESS: BinLog was able to be created and added to CB
+*		- BINLOG_HEAP_FULL: BinLog unable to be created.
+*		- BINLOGBUF_FULL: BinLog created but not added to CB.
+******************************************************/
 BinLogStatus BinLogEvent(CircBuf* CB, BinLogID ID, uint8_t* payload, uint32_t length);
 
 
+/******************************************************
+ * BinLogStatus BinLogCreate(BinLog** BL , BinLogID ID, uint8_t* payload, uint32_t length)
+ *	Description: Creates BinLog on heap containing data specified by parameters
+ *	Parameters:
+ *		- BinLog** BL: points at pointer to newly created BinLog
+ *		- BinLogID: specifies which type of BinLog is to be created
+ *		- uint8_t* payload: data to be added into new BinLog
+ *		- uint32_t length: size of payload. number of bytes pointed at by payload.
+ *	Possible Return Values:
+ *		- BINLOG_HEAP_FULL: BinLog unable to be created
+ *		- BINLOG_SUCCESS: BinLog successfully created
+******************************************************/
+BinLogStatus BinLogCreate(BinLog** BL , BinLogID ID, uint8_t* payload, uint32_t length);
 
+
+/******************************************************
+* BinLogStatus BinLogChar(CircBuf* CB, BinLogID ID, uint8_t character)
+*	Description: This function is used to log character data that is received
+*		via UART. It searches for an existing BinLog with an ID matching the ID parameter.
+*		If one is found the character is added into that BinLog's payload. If it is not found
+*		a new BinLog is made and added to the BinLogBuf.
+*	Parameters:
+*		- CircBuf* CB: This parameter should be a pointer to an initialized
+*			CircBuf.
+*		- BinLogID ID: This parameter is used to indicate the ID of the
+*			BinLog that is to be added to or created.
+*		- uint8_t character: This is the data to be added to the payload
+*	Possible Return Values:
+*		- BINLOG_EVENT_CREATED: A BinLog with a matching ID was not found,
+*		and so a new BinLog was created and added to CB successfully.
+*		- BINLOG_HEAP_FULL: BinLog unable to be created.
+*		- BINLOGBUF_FULL: BinLog created but not added to CB.
+*		- BinLog_NO_EVENT_CREATED: A BinLog with a matching ID was found in CB,
+*		character was added to the back of the BinLog's payload.
+******************************************************/
 BinLogStatus BinLogChar(CircBuf* CB, BinLogID ID, uint8_t character);
 
 
-
+/******************************************************
+* BinLogStatus BinLogSendData(CircBuf* CB, BinLogID ID)
+*	Description: This function is used to send out character data that has been logged
+*	in CB. Calls functions from log.h.
+*	Parameters:
+*		- CircBuf* CB: This parameter should be a pointer to an initialized
+*			CircBuf.
+*		- BinLogID ID: This parameter is used to indicate the ID of the desired
+*			character type. ID = DATA_ALPHA_COUNT prints alphabetic characters received,
+*			ID = DATA_PUNCTUATION_COUNT prints punctuation characters and count,
+*			ID = DATA_NUMERIC_COUNT prints all numerical characters received and count,
+*			ID = DATA_MISC_COUNT prints the count of control characters received
+*	Possible Return Values:
+*		- BINLOG_HEAP_FULL: Space unable to be allocated for function.
+*		- BINLOG_CHARS_FOUND: Found matching ID in CB and data of that type is sent out
+*			along with its count (except for MISC, only count sent)
+*		- BINLOG_NO_CHARS_FOUND: No BinLog with a matching ID was found. String printed
+*		out to let user know that no data could be found matching that type.
+******************************************************/
 BinLogStatus BinLogSendData(CircBuf* CB, BinLogID ID);
 
 
@@ -207,6 +285,26 @@ CircBufStatus BinLogBufferPeek(CircBuf* CB, BinLog** item_n, uint32_t n);
 
 
 /******************************************************
+* CircBufStatus BinLogBufferClear(CircBuf* CB)
+*	Description: This function is used to empty the contents
+*		of CB. The dynamic memory is returned to the heap.
+*	Parameters:
+*		- BinLogBuf* CB: This parameter should be a valid pointer
+*		to an initialized BinLogBuf. After a call to this function CB
+*		will return to its state immediately after
+*	Possible Return Values:
+*		- SUCCESS: CB is a valid pointer to an initialized BinLogBuf with at least
+*		n items inside of it. item_n will point at a copy of the nth item in the
+*		BinLogBuf.
+*		- INVALID_PEEK: CB is a valid pointer to an initialized BinLogBuf which contains
+*		less than n items or n < 1.
+*		- PTR_ERROR: CB is invalid or points at an uninitialized BinLogBuf or item_n
+*		is an invalid pointer.
+******************************************************/
+CircBufStatus BinLogBufferClear(CircBuf* CB);
+
+
+/******************************************************
 * CircBufStatus BinLogBufferDestroy(BinLogBuf* CB)
 *	Description: This function destroys a BinLogBuf and returns
 *		its memory back the heap. To use this buffer again a call
@@ -236,31 +334,5 @@ CircBufStatus BinLogBufferDestroy(CircBuf* CB);
 *		- PTR_ERROR: CB is NULL
 ******************************************************/
 uint32_t BinLogBufferCount(CircBuf* CB);
-
-/******************************************************
- * BinLog* BinLogCreate(BinLogID ID, uint8_t* payload)
- *	Description:
- *
- *	Parameters:
- *
- *	Possible Return Values:
- *
- *
-******************************************************/
-BinLogStatus BinLogCreate(BinLog** BL , BinLogID ID, uint8_t* payload, uint32_t length);
-
-
-/******************************************************
- * CircBufStatus LogInit(BinLog* BL)
- *	Description:
- *
- *	Parameters:
- *
- *	Possible Return Values:
- *
- *
-******************************************************/
-BinLogStatus LogSend(BinLog* BL);
-
 
 #endif /* SOURCES_BINARY_LOG_H_ */

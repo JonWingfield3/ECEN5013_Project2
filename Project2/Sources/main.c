@@ -34,10 +34,8 @@
 #include "uartbuf.h"
 #ifdef DEBUG
 #include "defines.h"
-#endif
-//#ifndef B_LOGGER
 #include "log.h"
-//#endif
+#endif
 #ifdef B_LOGGER
 #include "binary_log.h"
 uint32_t data_flag;
@@ -47,8 +45,6 @@ uint32_t data_flag;
 
 void main(void)
 {
-	//uint8_t data = 0, count = 0;
-
 	#ifdef FRDM
 	#ifdef DEBUG
 	uart_configure();
@@ -69,6 +65,7 @@ void main(void)
 	while(1){
 
 		#ifdef B_LOGGER
+		uint8_t data = 0, count = 0;
 		while(FLAG_IS_CLEAR(data_flag));
 		CLEAR_FLAG(data_flag);
 		uart_receive_byte(&data);
@@ -90,7 +87,7 @@ void main(void)
 		if(count == 16){
 			count = 0;
 
-			log_string("Alphabetic Characters\n");
+			log_string("\n\nAlphabetic Characters\n");
 			BinLogSendData(&BLB, DATA_ALPHA_COUNT);
 			log_string("\n\nPunctuation Characters\n");
 			BinLogSendData(&BLB, DATA_PUNCTUATION_COUNT);
@@ -103,23 +100,22 @@ void main(void)
 
 		#endif
 		#ifndef B_LOGGER
-		/*uart_receive_byte(&data);
-		uart_send_byte(&data);*/
 		uint8_t data[] = {'a','b','c','\0'};
-		        log_string(data);
-		        //log_flush();
-		        uint8_t i;
-		        for(i = 0; i < 4; i++) {
-		            *(data + i) = i + 65;
-		        }
-		        log_data(data, 4);
-		      //  log_flush();
-		        int32_t ui;
-		        for(ui = -10; ui < 11; ui++) {
-		            log_integer(ui);
-		        }
-		       // log_flush();
+		log_string(data);
+		log_flush();
+		uint8_t i;
+		for(i = 0; i < 4; i++) {
+			*(data + i) = i + 65;
+		}
+		log_data(data, 4);
+	    log_flush();
+		int32_t ui;
+		for(ui = -10; ui < 11; ui++) {
+			log_integer(ui);
+		}
+	    log_flush();
+		while(1);
 		#endif
-		        while(1);
+
 	}
 }

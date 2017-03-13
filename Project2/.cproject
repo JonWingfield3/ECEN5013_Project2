@@ -363,7 +363,7 @@
 									<listOptionValue builtIn="false" value="B_LOGGER"/>
 									<listOptionValue builtIn="false" value="FRDM"/>
 								</option>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.undef.1718714237" name="Undefined symbols (-U)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.undef" useByScannerDiscovery="false" valueType="undefDefinedSymbols"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.undef.1718714237" name="Undefined symbols (-U)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.undef" useByScannerDiscovery="false"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.1362188108" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.975570854" name="Cross ARM C++ Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler">
@@ -430,12 +430,13 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="DebugFRDM-log">
-			<resource resourceType="PROJECT" workspacePath="/Project2"/>
-		</configuration>
 		<configuration configurationName="DebugFRDM-blog">
 			<resource resourceType="PROJECT" workspacePath="/Project2"/>
 		</configuration>
+		<configuration configurationName="DebugFRDM-log">
+			<resource resourceType="PROJECT" workspacePath="/Project2"/>
+		</configuration>
+		<configuration configurationName="Non-Debug"/>
 		<configuration configurationName="Debug">
 			<resource resourceType="PROJECT" workspacePath="/Project2"/>
 		</configuration>

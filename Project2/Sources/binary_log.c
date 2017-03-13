@@ -116,18 +116,20 @@ CircBufStatus BinLogBufferDestroy(CircBuf* CB){
 BinLogStatus BinLogCreate(BinLog** BL, BinLogID ID, uint8_t* payload, uint32_t length){
 
 	*BL = (BinLog*) malloc(sizeof(BinLog));
+	if(*BL == NULL) return BINLOG_HEAP_FULL;
 	(*BL)->ID = ID;
 	(*BL)->size = length;
 	my_memmove(payload, (*BL)->payload, length);
-	return 0;
+	return BINLOG_SUCCESS;
 }
 
 BinLogStatus BinLogEvent(CircBuf* CB, BinLogID ID, uint8_t* payload, uint32_t length){
 
 	BinLog* BL;
-	BinLogCreate(&BL, ID, payload, length);
-	BinLogBufferAdd(CB, BL);
-	return 0;
+	if(BinLogCreate(&BL, ID, payload, length) == BINLOG_HEAP_FULL);
+		return BINLOG_HEAP_FULL;
+	if(BinLogBufferAdd(CB, BL) == OVERWRITE) return BINLOGBUF_FULL;
+	else BINLOG_SUCCESS;
 }
 
 BinLogStatus BinLogChar(CircBuf* CB, BinLogID ID, uint8_t character){
@@ -135,27 +137,31 @@ BinLogStatus BinLogChar(CircBuf* CB, BinLogID ID, uint8_t character){
 	// search for existing ID
 	uint32_t i = 1;
 	BinLog* BL = (BinLog*)malloc(sizeof(BinLog));
+	if(BL == NULL) return BINLOG_HEAP_FULL;
+
 	while(i <= CB->count){
 		BinLogBufferPeek(CB, &BL, i);
 		if(BL->ID == ID){
 			BL->payload[BL->size % MAX_BINLOG_PAYLOAD_SIZE] = character;
 			++(BL->size);
-			BinLogBufferAdd(CB, BL);
-			return 0;
+			if(BinLogBufferAdd(CB, BL) == OVERWRITE) return BINLOGBUF_FULL;
+			else return BINLOGCHAR_NO_EVENT_CREATED;
 		}
 		else{
 			++i;
 		}
 	}
-	// if we've reached here the CB doesn't contain the ID
+	// create new BinLog item if ID doesn't exist in CB
 	BinLogEvent(CB, ID, &character, 1);
-	return 0;
+	return BINLOGCHAR_EVENT_CREATED;
 }
 
 BinLogStatus BinLogSendData(CircBuf* CB, BinLogID ID){
 
 	uint32_t i = 1;
 	BinLog* BL = (BinLog*)malloc(sizeof(BinLog));
+	if(BL == NULL) return BINLOG_HEAP_FULL;
+
 	while(i <= CB->count){
 		BinLogBufferPeek(CB, &BL, i);
 		if(BL->ID == ID){
@@ -166,7 +172,7 @@ BinLogStatus BinLogSendData(CircBuf* CB, BinLogID ID){
 				uart_send_byte_n(BL->payload, BL->size);
 			}
 			free(BL);
-			return 0;
+			return BINLOG_CHARS_FOUND;
 		}
 		else{
 			++i;
@@ -175,7 +181,5 @@ BinLogStatus BinLogSendData(CircBuf* CB, BinLogID ID){
 	log_string("\nNumber of characters: 0");
 	log_string("\nCharacters received: none");
 	free(BL);
-	return 0;
+	return BINLOG_NO_CHARS_FOUND;
 }
-
-
